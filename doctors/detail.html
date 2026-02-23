@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Profil Dokter — MediZen</title>
+<link rel="stylesheet" href="doctors.css">
+</head>
+<body>
+<div class="app-shell">
+
+  <div class="detail-header">
+    <a href="index.html" class="icon-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </a>
+    <div style="flex:1;font-family:var(--font-display);font-size:18px;font-weight:700;">Profil Dokter</div>
+    <button class="icon-btn" id="bookmark-btn" onclick="toggleBookmark()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+    </button>
+  </div>
+
+  <div class="detail-page" id="detail-page">
+    <div style="display:flex;flex-direction:column;align-items:center;padding:60px 20px;color:var(--text-muted);">Memuat data dokter...</div>
+  </div>
+
+  <!-- Bottom CTA -->
+  <div class="booking-cta" id="booking-cta" style="display:none;">
+    <div class="cta-price-wrap" style="flex:1;">
+      <div class="cta-label">Biaya konsultasi</div>
+      <div id="cta-price-val" class="cta-price">-</div>
+    </div>
+    <a id="booking-link" href="#" class="btn btn-primary" style="flex:1.5;">Buat Janji</a>
+  </div>
+
+    <nav class="bottom-nav">
+    <a href="../home/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="nav-label">Beranda</span>
+    </a>
+    <a href="../search/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="nav-label">Search</span>
+    </a>
+    <a href="../doctors/index.html" class="nav-item active">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Dokter</span>
+    </a>
+    <a href="../chatbot/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="nav-label">AI Chat</span>
+    </a>
+    <a href="../profile/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Profil</span>
+    </a>
+  </nav>
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script>
+if (!MediZen.auth.isLoggedIn()) window.location.href = '../auth/login.html';
+
+const params = new URLSearchParams(location.search);
+const docId = parseInt(params.get('id'));
+const doctors = MediZen.storage.get('doctors') || [];
+const doc = doctors.find(d => d.id === docId);
+
+let selectedDay = null, selectedTime = null;
+
+if (!doc) {
+  document.getElementById('detail-page').innerHTML = '<div style="padding:40px 20px;text-align:center;color:var(--text-muted);">Dokter tidak ditemukan. <a href="index.html" style="color:var(--primary);">Kembali</a></div>';
+} else {
+  document.title = doc.name + ' — MediZen';
+
+  // Generate schedule days (next 7 days)
+  const days = [];
+  const dayNames = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+  const today = new Date();
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    days.push({ date: d.getDate(), day: dayNames[d.getDay()], available: i !== 0 && i !== 3, idx: i });
+  }
+
+  const timeSlots = ['08:00','09:00','10:00','11:00','13:00','14:00','15:00','16:00'];
+  const bookedSlots = ['10:00','14:00'];
+
+  function renderSchedule(activeIdx) {
+    return `
+    <div class="schedule-grid">
+      ${days.map((d,i) => `
+        <div class="day-chip ${d.available ? (i===activeIdx?'active':'available') : 'unavailable'}"
+             onclick="${d.available ? `selectDay(${i})` : ''}">
+          <span class="day-num">${d.date}</span>
+          <span class="day-name">${d.day}</span>
+        </div>`).join('')}
+    </div>
+    <div class="time-slots" id="time-slots-wrap">
+      ${timeSlots.map(t => `
+        <div class="time-slot ${bookedSlots.includes(t)?'booked':''} ${t===selectedTime?'active':''}"
+             onclick="${!bookedSlots.includes(t) ? `selectTime('${t}')` : ''}">
+          ${t}
+        </div>`).join('')}
+    </div>`;
+  }
+
+  function renderReviews() {
+    return doc.reviews_list.map(r => `
+      <div class="review-item">
+        <div class="review-header">
+          <div class="review-avatar">${r.name[0]}</div>
+          <div class="review-name">${r.name}</div>
+          <div class="review-date">${r.date}</div>
+        </div>
+        <div class="review-stars">
+          ${Array(r.rating).fill('<svg width="12" height="12" viewBox="0 0 24 24" fill="#F0C060" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>').join('')}
+        </div>
+        <div class="review-text">${r.text}</div>
+      </div>`).join('');
+  }
+
+  function renderPage(dayIdx) {
+    const priceLabel = doc.price === 0
+      ? '<span style="color:var(--primary);">Gratis</span>'
+      : 'Rp ' + doc.price.toLocaleString('id-ID');
+    document.getElementById('detail-page').innerHTML = `
+      <div class="detail-hero">
+        <div class="hero-avatar" style="background:${doc.color};">${doc.initials}${doc.online ? '<div class="online-badge" style="width:16px;height:16px;bottom:-3px;right:-3px;"></div>' : ''}</div>
+        <div class="hero-info">
+          <div class="hero-name">${doc.name}</div>
+          <div class="hero-spec">${doc.specLabel}</div>
+          <div class="hero-badges">
+            <span class="badge badge-primary">${doc.spec}</span>
+            ${doc.online ? '<span class="badge badge-green">Online</span>' : '<span class="badge" style="background:var(--bg-elevated);color:var(--text-secondary);">Offline</span>'}
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-value">${doc.rating}</div>
+          <div class="stat-label">Rating</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">${doc.experience}+</div>
+          <div class="stat-label">Tahun Pengalaman</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">${doc.reviews}</div>
+          <div class="stat-label">Ulasan</div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Tentang Dokter</div>
+        <p>${doc.about}</p>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Pendidikan</div>
+        <p>${doc.education.split('|').map(e => `<span style="display:block;margin-bottom:4px;">${e.trim()}</span>`).join('')}</p>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Informasi Praktik</div>
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            <span style="font-size:14px;">${doc.hospital}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span style="font-size:14px;">Bahasa: ${doc.languages.join(', ')}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <span style="font-size:14px;">Biaya konsultasi: ${priceLabel}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Pilih Jadwal</div>
+        <div id="schedule-wrap">${renderSchedule(dayIdx)}</div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Ulasan Pasien</div>
+        ${renderReviews()}
+      </div>
+    `;
+
+    // Update CTA
+    const cta = document.getElementById('booking-cta');
+    const ctaPrice = document.getElementById('cta-price-val');
+    cta.style.display = 'flex';
+    ctaPrice.innerHTML = doc.price === 0
+      ? '<span class="cta-price-free">Gratis</span>'
+      : 'Rp ' + doc.price.toLocaleString('id-ID');
+    document.getElementById('booking-link').href = '../booking/index.html?id=' + doc.id;
+  }
+
+  window.selectDay = function(idx) {
+    selectedDay = idx;
+    selectedTime = null;
+    document.getElementById('schedule-wrap').innerHTML = renderSchedule(idx);
+  };
+
+  window.selectTime = function(t) {
+    selectedTime = t;
+    const day = selectedDay !== null ? selectedDay : 1;
+    document.getElementById('schedule-wrap').innerHTML = renderSchedule(day);
+    MediZen.storage.set('booking_time', { dayIdx: day, time: t, doctorId: doc.id });
+  };
+
+  window.toggleBookmark = function() {
+    const bookmarks = MediZen.storage.get('bookmarked_doctors') || [];
+    const idx = bookmarks.indexOf(doc.id);
+    if (idx === -1) {
+      bookmarks.push(doc.id);
+      MediZen.storage.set('bookmarked_doctors', bookmarks);
+      MediZen.toast('Dokter disimpan ke favorit', 'success');
+    } else {
+      bookmarks.splice(idx, 1);
+      MediZen.storage.set('bookmarked_doctors', bookmarks);
+      MediZen.toast('Dihapus dari favorit', 'info');
+    }
+  };
+
+  renderPage(1);
+}
+</script>
+</body>
+</html>

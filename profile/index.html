@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Profil — MediZen</title>
+<link rel="stylesheet" href="profile.css">
+</head>
+<body>
+<div class="app-shell">
+  <div class="profile-page">
+
+    <!-- Topbar -->
+    <div class="profile-topbar">
+      <div class="profile-topbar-title">Profil</div>
+      <a href="../notifications/index.html" class="icon-btn" style="position:relative">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span id="notif-dot" class="notif-dot" style="display:none"></span>
+      </a>
+    </div>
+
+    <!-- Hero Header -->
+    <div class="profile-header">
+      <div class="profile-header-glow"></div>
+      <div class="avatar-wrap" id="avatar-wrap">
+        <span id="avatar-initials">MZ</span>
+        <button class="avatar-edit-btn" onclick="openEditModal()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+      </div>
+      <div class="profile-name" id="profile-name">Pengguna MediZen</div>
+      <div class="profile-email" id="profile-email">user@medizen.id</div>
+      <div class="member-badge">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        MediZen Member
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="profile-stats">
+      <div class="stat-item">
+        <div class="stat-num" id="stat-konsultasi">0</div>
+        <div class="stat-lbl">Konsultasi</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-num" id="stat-favorit">0</div>
+        <div class="stat-lbl">Favorit</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-num" id="stat-catatan">0</div>
+        <div class="stat-lbl">Catatan</div>
+      </div>
+    </div>
+
+    <!-- Data Diri -->
+    <div class="profile-section">
+      <div class="section-label">Data Diri</div>
+      <div class="info-grid">
+        <div class="info-row">
+          <span class="info-key">Nama Lengkap</span>
+          <span class="info-val" id="info-nama">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">No. Telepon</span>
+          <span class="info-val" id="info-phone">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Tanggal Lahir</span>
+          <span class="info-val" id="info-dob">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Jenis Kelamin</span>
+          <span class="info-val" id="info-gender">—</span>
+        </div>
+        <div class="info-row" style="border-bottom:none">
+          <span class="info-key">Gol. Darah</span>
+          <span class="info-val" id="info-blood">—</span>
+        </div>
+      </div>
+      <button class="btn btn-outline btn-full" style="margin-top:12px" onclick="openEditModal()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Edit Data Diri
+      </button>
+    </div>
+
+    <!-- Riwayat Booking -->
+    <div class="profile-section">
+      <div class="section-header-row">
+        <div class="section-label" style="margin-bottom:0">Riwayat Konsultasi</div>
+        <a href="../doctors/index.html" class="section-link">+ Booking Baru</a>
+      </div>
+      <div id="booking-list"></div>
+    </div>
+
+    <!-- Dokter Favorit -->
+    <div class="profile-section">
+      <div class="section-header-row">
+        <div class="section-label" style="margin-bottom:0">Dokter Favorit</div>
+        <a href="../doctors/index.html" class="section-link">Lihat Semua</a>
+      </div>
+      <div id="fav-list"></div>
+    </div>
+
+    <!-- Navigasi Cepat -->
+    <div class="profile-section">
+      <div class="section-label">Navigasi Cepat</div>
+      <div class="menu-list">
+        <a href="../health-record/index.html" class="menu-item">
+          <div class="menu-icon" style="background:rgba(247,129,102,0.12)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F78166" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div class="menu-text">
+            <div class="menu-title">Catatan Kesehatan</div>
+            <div class="menu-sub">Data vital & rekam medismu</div>
+          </div>
+          <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a href="../notifications/index.html" class="menu-item">
+          <div class="menu-icon" style="background:rgba(10,186,181,0.12)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0ABAB5" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </div>
+          <div class="menu-text">
+            <div class="menu-title">Notifikasi</div>
+            <div class="menu-sub">Reminder & pengumuman terbaru</div>
+          </div>
+          <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a href="../lab/index.html" class="menu-item">
+          <div class="menu-icon" style="background:rgba(124,58,237,0.08)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round"><path d="M14.5 2v17.5c0 1.4-1.1 2.5-2.5 2.5s-2.5-1.1-2.5-2.5V2"/><path d="M8.5 2h7"/><path d="M14.5 16h-5"/></svg>
+          </div>
+          <div class="menu-text">
+            <div class="menu-title">Laboratorium</div>
+            <div class="menu-sub">Booking paket pemeriksaan lab</div>
+          </div>
+          <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a href="../pharmacy/index.html" class="menu-item">
+          <div class="menu-icon" style="background:rgba(37,99,235,0.08)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
+          </div>
+          <div class="menu-text">
+            <div class="menu-title">Apotek Online</div>
+            <div class="menu-sub">Beli obat & suplemen</div>
+          </div>
+          <svg class="menu-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Pengaturan Notifikasi -->
+    <div class="profile-section">
+      <div class="section-label">Pengaturan Notifikasi</div>
+      <div class="toggle-row" onclick="toggleSetting('notif_konsultasi', this)">
+        <div>
+          <div class="toggle-label">Jadwal Konsultasi</div>
+          <div class="toggle-sub">Reminder H-1 dan H-0</div>
+        </div>
+        <div class="toggle-switch on" id="toggle-notif_konsultasi"></div>
+      </div>
+      <div class="toggle-row" onclick="toggleSetting('notif_obat', this)">
+        <div>
+          <div class="toggle-label">Reminder Minum Obat</div>
+          <div class="toggle-sub">Notifikasi sesuai jadwal obat</div>
+        </div>
+        <div class="toggle-switch on" id="toggle-notif_obat"></div>
+      </div>
+      <div class="toggle-row" onclick="toggleSetting('notif_tips', this)">
+        <div>
+          <div class="toggle-label">Tips Kesehatan Harian</div>
+          <div class="toggle-sub">Inspirasi & info kesehatan tiap hari</div>
+        </div>
+        <div class="toggle-switch" id="toggle-notif_tips"></div>
+      </div>
+    </div>
+
+    <!-- Akun -->
+    <div class="profile-section">
+      <div class="section-label">Akun</div>
+      <button class="danger-btn" onclick="clearData()">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        Hapus Semua Data
+      </button>
+      <button class="danger-btn logout-btn" onclick="doLogout()">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Keluar dari Akun
+      </button>
+    </div>
+    <div style="height:20px"></div>
+
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal-overlay" id="edit-modal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Edit Data Diri</div>
+      <div class="form-row input-group">
+        <label class="input-label">Nama Lengkap</label>
+        <input class="input-field" id="edit-nama" placeholder="Nama lengkapmu">
+      </div>
+      <div class="form-row input-group">
+        <label class="input-label">No. Telepon</label>
+        <input class="input-field" id="edit-phone" type="tel" placeholder="08xx-xxxx-xxxx">
+      </div>
+      <div class="form-row input-group">
+        <label class="input-label">Tanggal Lahir</label>
+        <input class="input-field" type="date" id="edit-dob">
+      </div>
+      <div class="form-row input-group">
+        <label class="input-label">Jenis Kelamin</label>
+        <select class="input-field" id="edit-gender">
+          <option value="">Pilih jenis kelamin</option>
+          <option value="Laki-laki">Laki-laki</option>
+          <option value="Perempuan">Perempuan</option>
+        </select>
+      </div>
+      <div class="form-row input-group">
+        <label class="input-label">Golongan Darah</label>
+        <select class="input-field" id="edit-blood">
+          <option value="">Pilih golongan darah</option>
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="AB">AB</option>
+          <option value="O">O</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" style="flex:1" onclick="closeEditModal()">Batal</button>
+        <button class="btn btn-primary" style="flex:2" onclick="saveEdit()">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+    <a href="../home/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="nav-label">Beranda</span>
+    </a>
+    <a href="../search/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="nav-label">Search</span>
+    </a>
+    <a href="../doctors/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Dokter</span>
+    </a>
+    <a href="../chatbot/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="nav-label">AI Chat</span>
+    </a>
+    <a href="../profile/index.html" class="nav-item active">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Profil</span>
+    </a>
+  </nav>
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script>
+if (!MediZen.auth.isLoggedIn()) window.location.href = '../auth/login.html';
+
+const SEED_BOOKINGS = [
+  { id:'BK001', doctorName:'Dr. Rina Sari', specialization:'Kardiologi', date:'2024-11-15', time:'10:00', status:'done' },
+  { id:'BK002', doctorName:'Dr. Hendra Kusuma', specialization:'Umum', date:'2024-12-22', time:'14:30', status:'done' },
+  { id:'BK003', doctorName:'Dr. Anisa Putri', specialization:'Dermatologi', date:'2025-03-10', time:'09:00', status:'upcoming' },
+];
+const SEED_FAVS = [
+  { name:'Dr. Rina Sari', specialization:'Kardiologi', rating:4.9 },
+  { name:'Dr. Budi Santoso', specialization:'Neurologi', rating:4.8 },
+];
+const GRADIENTS = [
+  'linear-gradient(135deg,#0ABAB5,#0891B2)',
+  'linear-gradient(135deg,#7C3AED,#2563EB)',
+  'linear-gradient(135deg,#F78166,#F0C060)',
+  'linear-gradient(135deg,#16A34A,#0ABAB5)'
+];
+
+function initProfile() {
+  const user = MediZen.auth.getUser() || {};
+  const profile = MediZen.storage.get('user_profile') || {};
+  const name = profile.nama || user.name || 'Pengguna MediZen';
+  const email = user.email || 'user@medizen.id';
+  const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+
+  document.getElementById('avatar-initials').textContent = initials;
+  document.getElementById('profile-name').textContent = name;
+  document.getElementById('profile-email').textContent = email;
+  document.getElementById('info-nama').textContent = name;
+  document.getElementById('info-phone').textContent = profile.phone || '—';
+  document.getElementById('info-dob').textContent = profile.dob ? MediZen.formatDate(profile.dob) : '—';
+  document.getElementById('info-gender').textContent = profile.gender || '—';
+  document.getElementById('info-blood').textContent = profile.blood ? 'Gol. ' + profile.blood : '—';
+
+  // Seed data on first run
+  if (!MediZen.storage.get('bookings')) MediZen.storage.set('bookings', SEED_BOOKINGS);
+  if (!MediZen.storage.get('bookmarked_doctors')) MediZen.storage.set('bookmarked_doctors', SEED_FAVS);
+
+  const bookings = MediZen.storage.get('bookings') || SEED_BOOKINGS;
+  const favs = MediZen.storage.get('bookmarked_doctors') || SEED_FAVS;
+  const records = MediZen.storage.get('health_records') || [];
+
+  document.getElementById('stat-konsultasi').textContent = bookings.length;
+  document.getElementById('stat-favorit').textContent = favs.length;
+  document.getElementById('stat-catatan').textContent = records.length;
+
+  renderBookings(bookings);
+  renderFavs(favs);
+
+  // Settings
+  const settings = MediZen.storage.get('notif_settings') || { notif_konsultasi:true, notif_obat:true, notif_tips:false };
+  Object.keys(settings).forEach(k => {
+    const el = document.getElementById('toggle-' + k);
+    if (el) el.className = 'toggle-switch' + (settings[k] ? ' on' : '');
+  });
+
+  // Notif badge
+  const notifs = MediZen.storage.get('notifications') || [];
+  const unread = notifs.filter(n => !n.read).length;
+  const dot = document.getElementById('notif-dot');
+  if (dot) dot.style.display = unread > 0 ? 'block' : 'none';
+}
+
+function renderBookings(bookings) {
+  const el = document.getElementById('booking-list');
+  if (!bookings.length) {
+    el.innerHTML = '<div class="empty-msg">Belum ada riwayat konsultasi</div>';
+    return;
+  }
+  const statusMap = { upcoming:['status-upcoming','Mendatang'], done:['status-done','Selesai'], cancel:['status-cancel','Dibatalkan'] };
+  el.innerHTML = bookings.slice(0, 3).map((b, i) => {
+    const initials = b.doctorName.replace('Dr. ','').split(' ').map(w=>w[0]).join('').slice(0,2);
+    const [cls, lbl] = statusMap[b.status] || statusMap.done;
+    return `<div class="booking-card">
+      <div class="booking-avatar" style="background:${GRADIENTS[i % GRADIENTS.length]}">${initials}</div>
+      <div class="booking-info">
+        <div class="booking-doctor">${b.doctorName}</div>
+        <div class="booking-spec">${b.specialization}</div>
+        <div class="booking-meta">
+          <span>${MediZen.formatDate(b.date)}</span>
+          <span class="meta-sep">·</span>
+          <span>${b.time} WIB</span>
+        </div>
+      </div>
+      <span class="booking-status ${cls}">${lbl}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderFavs(favs) {
+  const el = document.getElementById('fav-list');
+  if (!favs.length) {
+    el.innerHTML = '<div class="empty-msg">Belum ada dokter favorit</div>';
+    return;
+  }
+  el.innerHTML = favs.map((d, i) => {
+    const initials = d.name.replace('Dr. ','').split(' ').map(w=>w[0]).join('').slice(0,2);
+    return `<div class="fav-doctor">
+      <div class="fav-avatar" style="background:${GRADIENTS[i % GRADIENTS.length]}">${initials}</div>
+      <div class="fav-info">
+        <div class="fav-name">${d.name}</div>
+        <div class="fav-spec">${d.specialization} · ⭐ ${d.rating}</div>
+      </div>
+      <a href="../doctors/index.html" class="fav-book-btn">Booking</a>
+    </div>`;
+  }).join('');
+}
+
+function toggleSetting(key, rowEl) {
+  const toggle = document.getElementById('toggle-' + key);
+  const isOn = toggle.classList.contains('on');
+  toggle.classList.toggle('on', !isOn);
+  const settings = MediZen.storage.get('notif_settings') || {};
+  settings[key] = !isOn;
+  MediZen.storage.set('notif_settings', settings);
+  MediZen.toast(isOn ? 'Notifikasi dimatikan' : 'Notifikasi diaktifkan', isOn ? 'info' : 'success');
+}
+
+function openEditModal() {
+  const profile = MediZen.storage.get('user_profile') || {};
+  const user = MediZen.auth.getUser() || {};
+  document.getElementById('edit-nama').value = profile.nama || user.name || '';
+  document.getElementById('edit-phone').value = profile.phone || '';
+  document.getElementById('edit-dob').value = profile.dob || '';
+  document.getElementById('edit-gender').value = profile.gender || '';
+  document.getElementById('edit-blood').value = profile.blood || '';
+  document.getElementById('edit-modal').classList.add('active');
+}
+function closeEditModal() {
+  document.getElementById('edit-modal').classList.remove('active');
+}
+function saveEdit() {
+  const nama = document.getElementById('edit-nama').value.trim();
+  if (!nama) { MediZen.toast('Nama tidak boleh kosong', 'error'); return; }
+  MediZen.storage.set('user_profile', {
+    nama,
+    phone: document.getElementById('edit-phone').value.trim(),
+    dob: document.getElementById('edit-dob').value,
+    gender: document.getElementById('edit-gender').value,
+    blood: document.getElementById('edit-blood').value,
+  });
+  closeEditModal();
+  MediZen.toast('Profil berhasil diperbarui ✓', 'success');
+  setTimeout(initProfile, 200);
+}
+
+function clearData() {
+  if (!confirm('Yakin ingin menghapus semua data? Tindakan ini tidak bisa dibatalkan.')) return;
+  ['user_profile','bookings','bookmarked_doctors','health_records','notif_settings','cart','journal_entries','chat_history','today_mood','notifications','lab_bookings','search_history'].forEach(k => MediZen.storage.remove(k));
+  MediZen.toast('Semua data berhasil dihapus', 'success');
+  setTimeout(initProfile, 500);
+}
+
+function doLogout() {
+  if (!confirm('Yakin ingin keluar dari akun?')) return;
+  MediZen.auth.logout();
+  window.location.href = '../auth/login.html';
+}
+
+document.getElementById('edit-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeEditModal();
+});
+
+initProfile();
+</script>
+</body>
+</html>

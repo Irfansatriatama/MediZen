@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Info Kesehatan — MediZen</title>
+<link rel="stylesheet" href="health-info.css">
+</head>
+<body>
+<div class="app-shell">
+  <div class="hi-page" id="hi-page">
+
+    <!-- Header -->
+    <div class="hi-header">
+      <div class="hi-header-top">
+        <div class="hi-title">Info Kesehatan</div>
+        <div style="display:flex;gap:8px;">
+          <a href="#" class="icon-btn" onclick="MediZen.toast('Fitur filter segera hadir!','info');return false;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          </a>
+          <a href="../home/index.html" class="icon-btn">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </a>
+        </div>
+      </div>
+      <!-- Search -->
+      <div class="hi-search">
+        <svg class="hi-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" class="hi-search-input" placeholder="Cari artikel, tips, panduan..." oninput="filterArticles(this.value)" id="search-input">
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="category-scroll" id="cat-scroll">
+      <button class="cat-tab active" onclick="setCategory('Semua', this)">Semua</button>
+      <button class="cat-tab" onclick="setCategory('Mental Health', this)">Mental Health</button>
+      <button class="cat-tab" onclick="setCategory('Nutrisi', this)">Nutrisi</button>
+      <button class="cat-tab" onclick="setCategory('Olahraga', this)">Olahraga</button>
+      <button class="cat-tab" onclick="setCategory('Penyakit', this)">Penyakit</button>
+      <button class="cat-tab" onclick="setCategory('Kulit', this)">Kulit</button>
+      <button class="cat-tab" onclick="setCategory('Tidur', this)">Tidur</button>
+    </div>
+
+    <!-- Featured -->
+    <div class="featured-section" id="featured-wrap">
+      <a href="detail.html?id=1" class="featured-card" onclick="setDetailArticle(1)">
+        <span class="featured-emoji">🧠</span>
+        <div class="featured-tag">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Artikel Terpopuler
+        </div>
+        <div class="featured-title">5 Cara Menjaga Kesehatan Mental di Tengah Kesibukan Kerja</div>
+        <div class="featured-desc">Burnout dan stres adalah musuh produktivitas modern. Temukan cara sederhana namun efektif untuk merawat kesehatan mentalmu setiap hari.</div>
+        <div class="featured-meta">
+          <div class="featured-author">
+            <div class="author-avatar">👩‍⚕️</div>
+            <div>
+              <div class="author-name" style="font-size:12px;font-weight:600;">dr. Sari Dewi</div>
+              <div style="font-size:10px;color:var(--text-secondary);">Psikiater</div>
+            </div>
+          </div>
+          <div class="read-time">5 min baca</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Articles -->
+    <div class="article-section" id="article-section">
+      <div class="article-section-title" id="section-title">Artikel Terbaru</div>
+      <div class="article-grid" id="article-grid">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Empty state -->
+      <div id="empty-state" class="hidden" style="text-align:center;padding:48px 20px;">
+        <div style="font-size:48px;margin-bottom:16px;">🔍</div>
+        <div style="font-family:var(--font-display);font-size:18px;font-weight:700;margin-bottom:8px;">Tidak Ditemukan</div>
+        <div style="color:var(--text-secondary);font-size:14px;">Coba kata kunci lain atau ubah kategori</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Chatbot FAB -->
+  <a href="../chatbot/index.html" class="chatbot-fab">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  </a>
+
+  <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+    <a href="../home/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="nav-label">Beranda</span>
+    </a>
+    <a href="../search/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="nav-label">Search</span>
+    </a>
+    <a href="../doctors/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Dokter</span>
+    </a>
+    <a href="../chatbot/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="nav-label">AI Chat</span>
+    </a>
+    <a href="../profile/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Profil</span>
+    </a>
+  </nav>
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script>
+if (!MediZen.auth.isLoggedIn()) window.location.href = '../auth/login.html';
+
+const ARTICLES = [
+  { id: 1, cat: 'Mental Health', catColor: 'var(--accent-purple)', emoji: '🧠', title: '5 Cara Menjaga Kesehatan Mental di Tengah Kesibukan Kerja', author: 'dr. Sari Dewi', time: '2 jam lalu', read: '5 min', featured: true },
+  { id: 2, cat: 'Nutrisi', catColor: 'var(--primary)', emoji: '🥗', title: 'Panduan Makan Sehat untuk Gen Z yang Sibuk dan On Budget', author: 'Ahli Gizi Mira', time: '5 jam lalu', read: '3 min', featured: false },
+  { id: 3, cat: 'Olahraga', catColor: 'var(--accent-green)', emoji: '🏃', title: 'Olahraga 15 Menit Sehari yang Efektif Tanpa Perlu Gym', author: 'Trainer Reza', time: 'Kemarin', read: '4 min', featured: false },
+  { id: 4, cat: 'Tidur', catColor: 'var(--accent-blue)', emoji: '😴', title: 'Cara Mengatasi Insomnia dengan Metode 4-7-8 Breathing', author: 'dr. Hendra', time: 'Kemarin', read: '4 min', featured: false },
+  { id: 5, cat: 'Kulit', catColor: 'var(--accent-orange)', emoji: '✨', title: 'Skincare Routine Minimal untuk Kulit Sehat dan Bebas Jerawat', author: 'dr. Laila Sp.KK', time: '2 hari lalu', read: '6 min', featured: false },
+  { id: 6, cat: 'Mental Health', catColor: 'var(--accent-purple)', emoji: '💆', title: 'Kenali Tanda-tanda Burnout dan Cara Pemulihan yang Efektif', author: 'Psikolog Dian', time: '2 hari lalu', read: '7 min', featured: false },
+  { id: 7, cat: 'Penyakit', catColor: 'var(--error)', emoji: '🤧', title: 'Perbedaan Flu dan Pilek Biasa, Kapan Harus ke Dokter?', author: 'dr. Ahmad', time: '3 hari lalu', read: '3 min', featured: false },
+  { id: 8, cat: 'Nutrisi', catColor: 'var(--primary)', emoji: '💊', title: 'Suplemen Vitamin yang Wajib Dikonsumsi Generasi Z', author: 'Ahli Gizi Rahma', time: '4 hari lalu', read: '5 min', featured: false },
+  { id: 9, cat: 'Olahraga', catColor: 'var(--accent-green)', emoji: '🧘', title: 'Yoga untuk Pemula: Pose Dasar yang Bisa Dilakukan di Kamar', author: 'Instruktur Tari', time: '5 hari lalu', read: '5 min', featured: false },
+  { id: 10, cat: 'Penyakit', catColor: 'var(--error)', emoji: '❤️', title: 'Tips Menjaga Kesehatan Jantung Sejak Usia Muda', author: 'dr. Sarah Sp.JP', time: '1 minggu lalu', read: '6 min', featured: false },
+];
+
+let currentCat = 'Semua';
+
+function setDetailArticle(id) {
+  localStorage.setItem('mz_detail_article', id);
+}
+
+function setCategory(cat, el) {
+  currentCat = cat;
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderArticles();
+}
+
+function filterArticles(q) {
+  renderArticles(q);
+}
+
+function renderArticles(query = '') {
+  const q = query.toLowerCase();
+  let filtered = ARTICLES.filter(a => {
+    const matchCat = currentCat === 'Semua' || a.cat === currentCat;
+    const matchQ = !q || a.title.toLowerCase().includes(q) || a.cat.toLowerCase().includes(q) || a.author.toLowerCase().includes(q);
+    return matchCat && matchQ;
+  });
+
+  // Hide featured if filtering
+  const featuredWrap = document.getElementById('featured-wrap');
+  const showFeatured = currentCat === 'Semua' && !q;
+  featuredWrap.style.display = showFeatured ? '' : 'none';
+
+  // Filter non-featured
+  const listArticles = showFeatured ? filtered.filter(a => !a.featured) : filtered;
+
+  const grid = document.getElementById('article-grid');
+  const empty = document.getElementById('empty-state');
+  const secTitle = document.getElementById('section-title');
+
+  secTitle.textContent = currentCat !== 'Semua' ? 'Artikel ' + currentCat : q ? 'Hasil Pencarian' : 'Artikel Terbaru';
+
+  if (listArticles.length === 0) {
+    grid.innerHTML = '';
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+
+  grid.innerHTML = listArticles.map(a => `
+    <a href="detail.html?id=${a.id}" class="article-row" onclick="setDetailArticle(${a.id})">
+      <div class="article-thumb" style="background:${a.catColor}18;">${a.emoji}</div>
+      <div class="article-body">
+        <div class="article-cat" style="color:${a.catColor}">${a.cat}</div>
+        <div class="article-ttl">${a.title}</div>
+        <div class="article-info">
+          <span>${a.read}</span>
+          <span>·</span>
+          <span>${a.time}</span>
+        </div>
+      </div>
+    </a>
+  `).join('');
+}
+
+renderArticles();
+</script>
+</body>
+</html>

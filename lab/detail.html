@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Detail Paket Lab — MediZen</title>
+<link rel="stylesheet" href="lab.css">
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- Detail Content -->
+  <div id="detail-content" style="display:none">
+    <div class="lab-page" style="padding-bottom:100px">
+
+      <!-- Fixed header -->
+      <div class="lab-detail-header">
+        <a href="index.html" class="icon-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </a>
+        <div class="lab-header-title" id="det-header-title">Detail Paket</div>
+        <div style="width:40px"></div>
+      </div>
+
+      <!-- Hero -->
+      <div class="detail-hero" id="det-hero">
+        <div class="detail-icon-wrap" id="det-icon"></div>
+        <div class="detail-name" id="det-name"></div>
+        <div class="detail-price-row">
+          <div class="detail-price" id="det-price"></div>
+          <div id="det-orig-price" style="display:none" class="detail-orig-price"></div>
+        </div>
+        <div class="detail-badges-row">
+          <div class="det-badge det-badge-time" id="det-time-badge"></div>
+          <div class="det-badge det-badge-params" id="det-params-badge"></div>
+          <div class="det-badge det-badge-promo" id="det-promo-badge" style="display:none">✨ PROMO 20%</div>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="detail-section">
+        <div class="detail-sec-title">Tentang Paket</div>
+        <div class="detail-desc" id="det-desc"></div>
+      </div>
+
+      <!-- Parameters -->
+      <div class="detail-section">
+        <div class="detail-sec-title">Parameter Pemeriksaan</div>
+        <div class="param-list" id="det-params"></div>
+      </div>
+
+      <!-- Preparation -->
+      <div class="detail-section">
+        <div class="detail-sec-title">Persiapan Sebelum Tes</div>
+        <div id="det-prep"></div>
+      </div>
+
+      <!-- Booking Form -->
+      <div class="detail-section">
+        <div class="detail-sec-title">Booking Jadwal</div>
+        <div class="booking-form-card">
+
+          <div class="input-group form-row">
+            <label class="input-label">Pilih Lokasi Lab</label>
+            <select class="input-field" id="book-lab">
+              <option value="">Pilih lokasi laboratorium</option>
+              <option value="MediZen Lab Pusat, Jakarta">MediZen Lab Pusat, Jakarta</option>
+              <option value="MediZen Lab Bandung">MediZen Lab Bandung</option>
+              <option value="MediZen Lab Surabaya">MediZen Lab Surabaya</option>
+              <option value="MediZen Lab Medan">MediZen Lab Medan</option>
+            </select>
+          </div>
+
+          <div class="input-group form-row">
+            <label class="input-label">Tanggal Pengambilan Sampel</label>
+            <input class="input-field" type="date" id="book-date">
+          </div>
+
+          <div class="form-row">
+            <label class="input-label" style="display:block;font-size:13px;font-weight:500;color:var(--text-secondary);margin-bottom:8px">Pilih Waktu</label>
+            <div class="time-slots-grid" id="time-slots"></div>
+          </div>
+
+          <div class="form-divider">
+            <span>Data Pasien</span>
+          </div>
+
+          <div class="input-group form-row">
+            <label class="input-label">Nama Lengkap Pasien</label>
+            <input class="input-field" id="book-name" placeholder="Sesuai identitas">
+          </div>
+
+          <div class="input-group form-row">
+            <label class="input-label">No. Telepon</label>
+            <input class="input-field" id="book-phone" type="tel" placeholder="08xx-xxxx-xxxx">
+          </div>
+
+          <!-- Price summary -->
+          <div class="price-summary-card" id="price-summary">
+            <div class="price-row">
+              <span>Harga paket</span>
+              <span id="sum-price" style="font-weight:600">—</span>
+            </div>
+            <div class="price-row promo-row" id="promo-row" style="display:none">
+              <span style="color:var(--accent-green)">Diskon promo 20%</span>
+              <span id="sum-discount" style="color:var(--accent-green);font-weight:600">—</span>
+            </div>
+            <div class="price-divider"></div>
+            <div class="price-row price-total-row">
+              <span style="font-weight:700">Total Bayar</span>
+              <span id="sum-total" style="font-weight:800;color:var(--primary);font-family:var(--font-display);font-size:18px">—</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Sticky CTA -->
+    <div class="sticky-cta">
+      <button class="btn btn-primary btn-full btn-lg" onclick="doBooking()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Booking Sekarang
+      </button>
+    </div>
+  </div>
+
+  <!-- Success Screen -->
+  <div id="success-screen" style="display:none" class="success-page">
+    <div class="success-content">
+      <div class="success-anim">
+        <div class="success-ring"></div>
+        <div class="success-check">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      </div>
+      <div class="success-title">Booking Berhasil! 🎉</div>
+      <div class="success-sub">Jadwal lab kamu sudah dikonfirmasi. Datang 15 menit sebelum waktu yang dipilih ya!</div>
+
+      <div class="booking-confirm-card">
+        <div class="bcc-header">Detail Booking</div>
+        <div class="bcc-row">
+          <span class="bcc-key">ID Booking</span>
+          <span class="bcc-val booking-id-highlight" id="success-id">—</span>
+        </div>
+        <div class="bcc-row">
+          <span class="bcc-key">Paket</span>
+          <span class="bcc-val" id="success-pkg">—</span>
+        </div>
+        <div class="bcc-row">
+          <span class="bcc-key">Lokasi</span>
+          <span class="bcc-val" id="success-lab">—</span>
+        </div>
+        <div class="bcc-row">
+          <span class="bcc-key">Tanggal & Waktu</span>
+          <span class="bcc-val" id="success-sched">—</span>
+        </div>
+        <div class="bcc-row" style="border-bottom:none">
+          <span class="bcc-key">Pasien</span>
+          <span class="bcc-val" id="success-name">—</span>
+        </div>
+      </div>
+
+      <div class="success-tips">
+        <div class="tip-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Datang 15 menit lebih awal
+        </div>
+        <div class="tip-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Bawa KTP / kartu identitas
+        </div>
+        <div class="tip-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-orange)" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Ikuti instruksi persiapan
+        </div>
+      </div>
+
+      <div class="success-actions">
+        <a href="index.html" class="btn btn-primary btn-full">Lihat Paket Lainnya</a>
+        <a href="../home/index.html" class="btn btn-ghost btn-full" style="margin-top:10px">Ke Beranda</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+    <a href="../home/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="nav-label">Beranda</span>
+    </a>
+    <a href="../search/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="nav-label">Search</span>
+    </a>
+    <a href="../doctors/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Dokter</span>
+    </a>
+    <a href="../chatbot/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="nav-label">AI Chat</span>
+    </a>
+    <a href="../profile/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Profil</span>
+    </a>
+  </nav>
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script>
+if (!MediZen.auth.isLoggedIn()) window.location.href = '../auth/login.html';
+
+const DETAIL_DATA = {
+  l1: {
+    icon:'🩸', iconBg:'rgba(247,129,102,0.15)', iconColor:'#F78166',
+    name:'Paket Cek Darah Lengkap', price:'185.000', rawPrice:185000, promo:true,
+    time:'1-2 hari kerja', params:8,
+    desc:'Paket pemeriksaan darah komprehensif yang mencakup analisis komponen darah lengkap. Ideal untuk pemeriksaan rutin, deteksi anemia, infeksi, dan gangguan darah lainnya.',
+    paramList:[
+      {name:'Hemoglobin (Hb)', unit:'g/dL'},{name:'Leukosit (WBC)', unit:'10³/µL'},
+      {name:'Trombosit', unit:'10³/µL'},{name:'Hematokrit', unit:'%'},
+      {name:'Eritrosit (RBC)', unit:'10⁶/µL'},{name:'LED (Laju Endap Darah)', unit:'mm/jam'},
+      {name:'MCV (Mean Corpuscular Volume)', unit:'fL'},{name:'MCH', unit:'pg'}
+    ],
+    prep:[
+      'Puasa selama 8–12 jam sebelum pengambilan sampel (air putih boleh)',
+      'Cukup istirahat malam sebelumnya, hindari begadang',
+      'Hindari olahraga berat 24 jam sebelum tes',
+      'Bawa kartu identitas dan kartu BPJS jika ada'
+    ]
+  },
+  l2: {
+    icon:'💗', iconBg:'rgba(255,92,92,0.15)', iconColor:'#FF5C5C',
+    name:'Paket Kolesterol & Lipid', price:'145.000', rawPrice:145000, promo:false,
+    time:'1 hari kerja', params:5,
+    desc:'Pemeriksaan profil lipid darah untuk mendeteksi risiko penyakit kardiovaskular. Hasil dapat digunakan sebagai referensi dokter untuk mencegah penyakit jantung koroner.',
+    paramList:[
+      {name:'Kolesterol Total', unit:'mg/dL'},{name:'HDL (Kolesterol Baik)', unit:'mg/dL'},
+      {name:'LDL (Kolesterol Jahat)', unit:'mg/dL'},{name:'Trigliserida', unit:'mg/dL'},
+      {name:'Rasio Kolesterol/HDL', unit:'ratio'}
+    ],
+    prep:[
+      'Puasa 10–12 jam sebelum tes (air putih tetap boleh)',
+      'Hindari alkohol 24 jam sebelumnya',
+      'Obat-obatan tertentu mungkin perlu dihentikan sementara — konsultasikan dokter',
+      'Hindari makanan berlemak tinggi 2 hari sebelum tes'
+    ]
+  },
+  l3: {
+    icon:'🍬', iconBg:'rgba(240,192,96,0.15)', iconColor:'#F0C060',
+    name:'Paket Diabetes Screening', price:'125.000', rawPrice:125000, promo:true,
+    time:'1 hari kerja', params:4,
+    desc:'Paket skrining diabetes untuk mendeteksi kadar gula darah dan risiko diabetes tipe 2. Pemeriksaan ini direkomendasikan untuk usia 30+ atau mereka dengan riwayat keluarga diabetes.',
+    paramList:[
+      {name:'Gula Darah Puasa (GDP)', unit:'mg/dL'},{name:'Gula Darah 2 Jam PP', unit:'mg/dL'},
+      {name:'HbA1c (Hemoglobin Terglikasi)', unit:'%'},{name:'Insulin Puasa', unit:'µIU/mL'}
+    ],
+    prep:[
+      'Puasa 8 jam sebelum pemeriksaan (untuk GDP dan insulin)',
+      'Untuk tes 2 jam PP: makan sesuai porsi biasa, lalu tunggu 2 jam',
+      'Tidak merokok selama masa puasa',
+      'Informasikan obat diabetes atau metformin yang sedang dikonsumsi'
+    ]
+  },
+  l4: {
+    icon:'⚡', iconBg:'rgba(188,140,255,0.15)', iconColor:'#BC8CFF',
+    name:'Paket Tiroid Lengkap', price:'210.000', rawPrice:210000, promo:false,
+    time:'2–3 hari kerja', params:3,
+    desc:'Pemeriksaan fungsi tiroid komprehensif untuk mendeteksi hipotiroid, hipertiroid, dan gangguan tiroid lainnya. Cocok untuk gejala seperti kelelahan, perubahan berat badan, atau detak jantung tidak teratur.',
+    paramList:[
+      {name:'TSH (Thyroid Stimulating Hormone)', unit:'µIU/mL'},
+      {name:'FT3 (Free Triiodothyronine)', unit:'pg/mL'},
+      {name:'FT4 (Free Thyroxine)', unit:'ng/dL'}
+    ],
+    prep:[
+      'Tidak perlu puasa untuk pemeriksaan tiroid',
+      'Informasikan suplemen tiroid atau obat-obatan yang dikonsumsi',
+      'Sebaiknya ambil sampel pagi hari (07:00–10:00)',
+      'Hindari stres berlebih sebelum pemeriksaan'
+    ]
+  },
+  l5: {
+    icon:'🌿', iconBg:'rgba(57,211,83,0.15)', iconColor:'#39D353',
+    name:'Paket Alergi Umum Panel', price:'450.000', rawPrice:450000, promo:true,
+    time:'3–5 hari kerja', params:20,
+    desc:'Panel tes alergi komprehensif mencakup alergen inhalasi dan makanan yang umum di Indonesia. Membantu mengidentifikasi penyebab alergi untuk penanganan yang lebih tepat.',
+    paramList:[
+      {name:'IgE Total', unit:'kU/L'},{name:'Debu (D. pteronyssinus)', unit:'kU/L'},
+      {name:'Debu (D. farinae)', unit:'kU/L'},{name:'Kecoa', unit:'kU/L'},
+      {name:'Bulu Kucing', unit:'kU/L'},{name:'Bulu Anjing', unit:'kU/L'},
+      {name:'Serbuk Rumput', unit:'kU/L'},{name:'Serbuk Pohon', unit:'kU/L'},
+      {name:'Susu Sapi', unit:'kU/L'},{name:'Telur Putih', unit:'kU/L'},
+      {name:'Kacang Tanah', unit:'kU/L'},{name:'Udang', unit:'kU/L'},
+      {name:'Kepiting', unit:'kU/L'},{name:'Tuna', unit:'kU/L'},
+      {name:'Kedelai', unit:'kU/L'},{name:'Gandum', unit:'kU/L'},
+      {name:'Latex', unit:'kU/L'},{name:'Kapang (Aspergillus)', unit:'kU/L'},
+      {name:'Kapang (Cladosporium)', unit:'kU/L'},{name:'Cockroach Mix', unit:'kU/L'}
+    ],
+    prep:[
+      'Hentikan antihistamin 5–7 hari sebelum tes (penting!)',
+      'Tidak perlu puasa untuk tes alergi',
+      'Informasikan semua obat yang sedang dikonsumsi',
+      'Pemeriksaan bisa dilakukan kapan saja sepanjang hari'
+    ]
+  },
+  l6: {
+    icon:'❤️', iconBg:'rgba(255,92,92,0.15)', iconColor:'#FF5C5C',
+    name:'Paket Kesehatan Jantung Pro', price:'320.000', rawPrice:320000, promo:false,
+    time:'2 hari kerja', params:10,
+    desc:'Paket pemeriksaan jantung komprehensif yang menggabungkan pemeriksaan darah dan EKG untuk evaluasi risiko kardiovaskular secara menyeluruh.',
+    paramList:[
+      {name:'Troponin I (Jantung)', unit:'ng/mL'},{name:'CK-MB', unit:'U/L'},
+      {name:'Kolesterol Total', unit:'mg/dL'},{name:'LDL', unit:'mg/dL'},
+      {name:'HDL', unit:'mg/dL'},{name:'Trigliserida', unit:'mg/dL'},
+      {name:'BNP (Brain Natriuretic Peptide)', unit:'pg/mL'},{name:'hs-CRP', unit:'mg/L'},
+      {name:'Fibrinogen', unit:'mg/dL'},{name:'EKG 12 Lead', unit:'interpretasi'}
+    ],
+    prep:[
+      'Puasa 10–12 jam untuk pemeriksaan lipid',
+      'Hindari aktivitas fisik berat 24 jam sebelum EKG',
+      'Informasikan obat jantung yang sedang dikonsumsi',
+      'Pakai pakaian longgar untuk kemudahan pemasangan elektroda EKG'
+    ]
+  },
+  l7: {
+    icon:'🏥', iconBg:'rgba(10,186,181,0.15)', iconColor:'#0ABAB5',
+    name:'Paket Medical Check Up Dasar', price:'399.000', rawPrice:399000, promo:true,
+    time:'2–3 hari kerja', params:25,
+    desc:'Paket MCU dasar paling lengkap untuk pemeriksaan kesehatan menyeluruh. Mencakup darah, urin, fungsi organ, dan metabolik. Cocok untuk pemeriksaan tahunan kamu.',
+    paramList:[
+      {name:'Darah Lengkap (8 parameter)', unit:'—'},{name:'Urinalisis Lengkap', unit:'—'},
+      {name:'Gula Darah Puasa', unit:'mg/dL'},{name:'Kolesterol Total', unit:'mg/dL'},
+      {name:'Trigliserida', unit:'mg/dL'},{name:'HDL Kolesterol', unit:'mg/dL'},
+      {name:'LDL Kolesterol', unit:'mg/dL'},{name:'Asam Urat', unit:'mg/dL'},
+      {name:'SGOT (AST)', unit:'U/L'},{name:'SGPT (ALT)', unit:'U/L'},
+      {name:'Ureum', unit:'mg/dL'},{name:'Kreatinin', unit:'mg/dL'}
+    ],
+    prep:[
+      'Puasa 10–12 jam sebelum pemeriksaan',
+      'Tampung urin pagi pertama dalam wadah steril yang disediakan lab',
+      'Istirahat cukup malam sebelumnya',
+      'Bawa daftar lengkap obat rutin yang dikonsumsi'
+    ]
+  },
+  l8: {
+    icon:'🌸', iconBg:'rgba(188,140,255,0.15)', iconColor:'#BC8CFF',
+    name:'Paket Hormon Reproduksi', price:'285.000', rawPrice:285000, promo:false,
+    time:'2–3 hari kerja', params:6,
+    desc:'Pemeriksaan panel hormon reproduksi untuk wanita dan pria. Membantu mendiagnosis gangguan kesuburan, siklus menstruasi tidak teratur, dan gangguan hormonal lainnya.',
+    paramList:[
+      {name:'FSH (Follicle Stimulating Hormone)', unit:'mIU/mL'},
+      {name:'LH (Luteinizing Hormone)', unit:'mIU/mL'},
+      {name:'Estradiol (E2)', unit:'pg/mL'},
+      {name:'Progesteron', unit:'ng/mL'},
+      {name:'Prolaktin', unit:'ng/mL'},
+      {name:'Testosteron Total', unit:'ng/dL'}
+    ],
+    prep:[
+      'Untuk wanita: idealnya dilakukan hari ke-2 atau ke-3 siklus menstruasi',
+      'Puasa 8 jam untuk akurasi hormon tertentu',
+      'Hindari stres dan olahraga berat 24 jam sebelum tes',
+      'Informasikan kontrasepsi hormonal yang digunakan'
+    ]
+  }
+};
+
+const TIME_SLOTS = ['07:00','07:30','08:00','08:30','09:00','09:30','10:00','10:30','11:00','13:00','13:30','14:00'];
+let selectedTime = null;
+let currentPkg = null;
+
+function init() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const id = urlParams.get('id') || 'l1';
+  const pkg = DETAIL_DATA[id];
+  if (!pkg) { window.location.href = 'index.html'; return; }
+  currentPkg = pkg;
+
+  // Populate header + hero
+  document.getElementById('det-header-title').textContent = 'Detail Paket';
+  document.title = pkg.name + ' — MediZen';
+
+  // Hero
+  document.getElementById('det-icon').style.cssText = `background:${pkg.iconBg};font-size:44px;width:90px;height:90px;border-radius:26px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px`;
+  document.getElementById('det-icon').textContent = pkg.icon;
+  document.getElementById('det-name').textContent = pkg.name;
+  document.getElementById('det-price').textContent = 'Rp ' + pkg.price;
+  document.getElementById('det-price').style.color = pkg.iconColor;
+
+  if (pkg.promo) {
+    const origAmt = Math.round(pkg.rawPrice / 0.8);
+    const origEl = document.getElementById('det-orig-price');
+    origEl.textContent = 'Rp ' + origAmt.toLocaleString('id-ID');
+    origEl.style.display = 'block';
+    document.getElementById('det-promo-badge').style.display = 'inline-flex';
+  }
+
+  document.getElementById('det-time-badge').innerHTML =
+    `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Hasil ${pkg.time}`;
+  document.getElementById('det-params-badge').innerHTML =
+    `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> ${pkg.params} parameter`;
+
+  // Hero background accent
+  document.getElementById('det-hero').style.background =
+    `linear-gradient(160deg, ${pkg.iconBg.replace('0.15','0.08')} 0%, var(--bg) 65%)`;
+
+  // Description
+  document.getElementById('det-desc').textContent = pkg.desc;
+
+  // Parameters
+  document.getElementById('det-params').innerHTML = pkg.paramList.map(p => `
+    <div class="param-item">
+      <div class="param-dot" style="background:${pkg.iconColor}"></div>
+      <div class="param-name">${p.name}</div>
+      <div class="param-unit">${p.unit}</div>
+    </div>`).join('');
+
+  // Prep steps
+  document.getElementById('det-prep').innerHTML = pkg.prep.map((step, i) => `
+    <div class="prep-item">
+      <div class="prep-num" style="background:${pkg.iconBg};color:${pkg.iconColor}">${i + 1}</div>
+      <div class="prep-text">${step}</div>
+    </div>`).join('');
+
+  // Time slots
+  document.getElementById('time-slots').innerHTML = TIME_SLOTS.map(t => `
+    <button class="time-slot-btn" onclick="selectTime('${t}', this)">${t}</button>
+  `).join('');
+
+  // Pre-fill user data
+  const user = MediZen.auth.getUser() || {};
+  const profile = MediZen.storage.get('user_profile') || {};
+  document.getElementById('book-name').value = profile.nama || user.name || '';
+  document.getElementById('book-phone').value = profile.phone || '';
+
+  // Date — min = tomorrow
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().split('T')[0];
+  document.getElementById('book-date').min = tomorrowStr;
+  document.getElementById('book-date').value = tomorrowStr;
+
+  // Price summary
+  updatePriceSummary();
+
+  document.getElementById('detail-content').style.display = 'block';
+}
+
+function updatePriceSummary() {
+  const pkg = currentPkg;
+  if (!pkg) return;
+  document.getElementById('sum-price').textContent = 'Rp ' + pkg.price;
+  if (pkg.promo) {
+    const discount = Math.round(pkg.rawPrice * 0.2);
+    const total = pkg.rawPrice - discount;
+    document.getElementById('sum-discount').textContent = '−Rp ' + discount.toLocaleString('id-ID');
+    document.getElementById('sum-total').textContent = 'Rp ' + total.toLocaleString('id-ID');
+    document.getElementById('promo-row').style.display = 'flex';
+  } else {
+    document.getElementById('sum-total').textContent = 'Rp ' + pkg.price;
+  }
+}
+
+function selectTime(t, btn) {
+  selectedTime = t;
+  document.querySelectorAll('.time-slot-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  btn.style.setProperty('--slot-color', currentPkg.iconColor);
+}
+
+function doBooking() {
+  const lab = document.getElementById('book-lab').value;
+  const date = document.getElementById('book-date').value;
+  const name = document.getElementById('book-name').value.trim();
+
+  if (!lab) { MediZen.toast('Pilih lokasi lab terlebih dahulu', 'error'); return; }
+  if (!date) { MediZen.toast('Pilih tanggal pengambilan', 'error'); return; }
+  if (!selectedTime) { MediZen.toast('Pilih waktu pengambilan', 'error'); return; }
+  if (!name) { MediZen.toast('Isi nama pasien', 'error'); return; }
+
+  const bookingId = 'LAB-' + Date.now().toString(36).toUpperCase().slice(-8);
+
+  // Save to storage
+  const bookings = MediZen.storage.get('lab_bookings') || [];
+  bookings.push({
+    id: bookingId, packageId: new URLSearchParams(window.location.search).get('id'),
+    packageName: currentPkg.name, lab, date, time: selectedTime, name,
+    phone: document.getElementById('book-phone').value.trim(),
+    createdAt: Date.now()
+  });
+  MediZen.storage.set('lab_bookings', bookings);
+
+  // Show success
+  document.getElementById('success-id').textContent = bookingId;
+  document.getElementById('success-pkg').textContent = currentPkg.name;
+  document.getElementById('success-lab').textContent = lab;
+  document.getElementById('success-sched').textContent =
+    MediZen.formatDate(date) + ' · ' + selectedTime + ' WIB';
+  document.getElementById('success-name').textContent = name;
+
+  document.getElementById('detail-content').style.display = 'none';
+  document.getElementById('success-screen').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+init();
+</script>
+</body>
+</html>

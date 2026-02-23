@@ -1,0 +1,150 @@
+@import url('../assets/css/global.css');
+
+.home-page {
+  padding: 0 0 calc(var(--nav-h) + 16px);
+  animation: fadeIn 0.4s ease;
+}
+
+/* Header */
+.home-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px 12px;
+  position: sticky; top: 0;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(16px);
+  z-index: 50;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.greeting-sm { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+.user-name { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--text); margin-top: 2px; }
+.header-actions { display: flex; gap: 8px; }
+
+/* Health Card */
+.health-card {
+  margin: 16px 20px;
+  background: linear-gradient(135deg, #0ABAB5 0%, #2563EB 100%);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(37,99,235,0.2);
+}
+.health-card::before {
+  content: '';
+  position: absolute; top: -40px; right: -40px;
+  width: 160px; height: 160px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+}
+.health-card::after {
+  content: '';
+  position: absolute; bottom: -30px; left: -20px;
+  width: 100px; height: 100px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50%;
+}
+.card-label { font-size: 11px; color: rgba(255,255,255,0.8); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.card-title { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: white; margin-bottom: 16px; }
+.health-metrics {
+  display: flex; gap: 0;
+  border-top: 1px solid rgba(255,255,255,0.2);
+  padding-top: 16px;
+}
+.metric-item { flex: 1; text-align: center; }
+.metric-item:not(:last-child) { border-right: 1px solid rgba(255,255,255,0.2); }
+.m-label { font-size: 10px; color: rgba(255,255,255,0.7); font-weight: 500; margin-bottom: 4px; }
+.m-value { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: white; }
+.m-unit { font-size: 10px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+.check-btn {
+  display: block; margin-top: 14px; text-align: center; padding: 10px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: var(--radius);
+  color: white; text-decoration: none; font-size: 13px; font-weight: 600;
+  transition: all var(--transition);
+}
+.check-btn:hover { background: rgba(255,255,255,0.25); }
+
+/* Promo Banner */
+.promo-banner {
+  margin: 0 20px 20px;
+  background: linear-gradient(135deg, #EFF6FF 0%, #E0F7F6 100%);
+  border: 1px solid var(--border-blue);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.promo-banner::after {
+  content: '';
+  position: absolute; bottom: -30px; right: -30px;
+  width: 120px; height: 120px;
+  background: radial-gradient(circle, rgba(37,99,235,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.promo-label { font-size: 11px; color: var(--blue); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+.promo-title { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: var(--text); line-height: 1.2; margin-bottom: 8px; }
+.promo-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 14px; }
+.promo-btn {
+  display: inline-flex; padding: 10px 20px;
+  background: var(--blue); color: white;
+  border-radius: var(--radius-full);
+  font-size: 13px; font-weight: 600; text-decoration: none;
+  transition: all var(--transition); box-shadow: var(--shadow-blue);
+}
+.promo-btn:hover { background: var(--blue-dark); transform: translateY(-1px); }
+
+/* Quick Actions */
+.quick-actions { padding: 0 20px; margin-bottom: 24px; }
+.actions-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.action-item { display: flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none; }
+.action-icon {
+  width: 58px; height: 58px; border-radius: var(--radius-lg);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+.action-item:hover .action-icon { transform: scale(1.08); }
+.action-label { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-align: center; }
+
+/* Doctors scroll */
+.doctors-scroll {
+  display: flex; gap: 12px; overflow-x: auto;
+  padding: 0 20px 8px; scrollbar-width: none;
+}
+.doctors-scroll::-webkit-scrollbar { display: none; }
+.doctor-card {
+  flex-shrink: 0; width: 130px;
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 14px 12px;
+  text-decoration: none; transition: all var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+.doctor-card:hover { border-color: var(--border-active); transform: translateY(-3px); box-shadow: var(--shadow-card); }
+.doctor-avatar { font-size: 28px; margin-bottom: 8px; }
+.doctor-name { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.doctor-spec { font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; }
+.doctor-rating { font-size: 11px; color: var(--accent-yellow); font-weight: 600; margin-bottom: 8px; }
+.doctor-status { font-size: 11px; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+/* Articles */
+.articles-list { padding: 0 20px; display: flex; flex-direction: column; gap: 12px; }
+.article-card {
+  display: flex; gap: 14px;
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 14px;
+  text-decoration: none; transition: all var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+.article-card:hover { border-color: var(--border-active); transform: translateX(4px); box-shadow: var(--shadow-card); }
+.article-thumbnail {
+  width: 60px; height: 60px; background: var(--bg-elevated);
+  border-radius: var(--radius); display: flex; align-items: center; justify-content: center;
+  font-size: 26px; flex-shrink: 0; border: 1px solid var(--border);
+}
+.article-content { flex: 1; min-width: 0; }
+.article-category { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+.article-title { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.article-meta { display: flex; gap: 6px; font-size: 11px; color: var(--text-muted); margin-top: 6px; }

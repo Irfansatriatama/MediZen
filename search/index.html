@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Cari — MediZen</title>
+<link rel="stylesheet" href="search.css">
+</head>
+<body>
+<div class="app-shell">
+  <div class="search-page">
+
+    <!-- Header -->
+    <div class="search-header">
+      <div class="search-header-top">
+        <a href="../home/index.html" class="icon-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </a>
+        <div class="search-title">Cari</div>
+      </div>
+      <div class="search-bar-wrap">
+        <svg class="sbar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="search-input" id="search-input" placeholder="Cari dokter, artikel, obat, lab..." oninput="onSearchInput(this.value)" autocomplete="off" autofocus>
+        <button class="search-clear" id="clear-btn" onclick="clearSearch()" style="display:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Category filters -->
+    <div class="cat-filters">
+      <div class="cat-chip active" data-cat="all" onclick="setCategory('all', this)">Semua</div>
+      <div class="cat-chip" data-cat="doctor" onclick="setCategory('doctor', this)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Dokter
+      </div>
+      <div class="cat-chip" data-cat="article" onclick="setCategory('article', this)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Artikel
+      </div>
+      <div class="cat-chip" data-cat="pharmacy" onclick="setCategory('pharmacy', this)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
+        Apotek
+      </div>
+      <div class="cat-chip" data-cat="lab" onclick="setCategory('lab', this)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2v17.5c0 1.4-1.1 2.5-2.5 2.5s-2.5-1.1-2.5-2.5V2"/><path d="M8.5 2h7"/></svg>
+        Lab
+      </div>
+    </div>
+
+    <!-- Default view: recent + popular -->
+    <div id="default-view">
+      <div class="recent-section">
+        <div class="recent-title">Pencarian Terakhir</div>
+        <div id="recent-tags" class="recent-tags-wrap"></div>
+      </div>
+
+      <div class="popular-section">
+        <div class="popular-title">Populer Sekarang</div>
+        <div class="popular-grid">
+          <div class="popular-chip" onclick="doSearch('dokter jantung')">❤️ Dokter Jantung</div>
+          <div class="popular-chip" onclick="doSearch('vitamin c')">🍊 Vitamin C</div>
+          <div class="popular-chip" onclick="doSearch('cek darah')">🩸 Cek Darah</div>
+          <div class="popular-chip" onclick="doSearch('diet sehat')">🥗 Diet Sehat</div>
+          <div class="popular-chip" onclick="doSearch('dokter kulit')">✨ Dokter Kulit</div>
+          <div class="popular-chip" onclick="doSearch('paracetamol')">💊 Paracetamol</div>
+          <div class="popular-chip" onclick="doSearch('tidur cukup')">💤 Tidur Cukup</div>
+          <div class="popular-chip" onclick="doSearch('kolesterol')">📊 Kolesterol</div>
+        </div>
+      </div>
+
+      <div class="discover-section">
+        <div class="popular-title">Jelajahi</div>
+        <div class="discover-grid">
+          <a href="../doctors/index.html" class="discover-card" style="background:linear-gradient(135deg,rgba(10,186,181,0.2),rgba(8,145,178,0.1))">
+            <div class="disc-icon">👨‍⚕️</div>
+            <div class="disc-label">Dokter</div>
+          </a>
+          <a href="../health-info/index.html" class="discover-card" style="background:linear-gradient(135deg,rgba(22,163,74,0.1),rgba(10,186,181,0.08))">
+            <div class="disc-icon">📖</div>
+            <div class="disc-label">Artikel</div>
+          </a>
+          <a href="../lab/index.html" class="discover-card" style="background:linear-gradient(135deg,rgba(37,99,235,0.1),rgba(37,99,235,0.05))">
+            <div class="disc-icon">🔬</div>
+            <div class="disc-label">Lab</div>
+          </a>
+          <a href="../pharmacy/index.html" class="discover-card" style="background:linear-gradient(135deg,rgba(37,99,235,0.1),rgba(10,186,181,0.08))">
+            <div class="disc-icon">💊</div>
+            <div class="disc-label">Apotek</div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results view -->
+    <div id="results-view" style="display:none">
+      <div class="results-summary" id="results-summary"></div>
+      <div class="results-container" id="results-container"></div>
+    </div>
+
+    <!-- Empty state -->
+    <div id="empty-view" style="display:none">
+      <div class="empty-search">
+        <div class="empty-search-icon">🔍</div>
+        <div class="empty-search-title">Tidak ditemukan</div>
+        <div class="empty-search-desc" id="empty-query-txt"></div>
+        <button class="btn btn-outline btn-sm" style="margin-top:16px" onclick="clearSearch()">Reset Pencarian</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+    <a href="../home/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="nav-label">Beranda</span>
+    </a>
+    <a href="../search/index.html" class="nav-item active">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="nav-label">Search</span>
+    </a>
+    <a href="../doctors/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Dokter</span>
+    </a>
+    <a href="../chatbot/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="nav-label">AI Chat</span>
+    </a>
+    <a href="../profile/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Profil</span>
+    </a>
+  </nav>
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script>
+if (!MediZen.auth.isLoggedIn()) window.location.href = '../auth/login.html';
+
+const DATA = {
+  doctor: [
+    { id:'d1', name:'Dr. Rina Sari', sub:'Kardiologi · 12 th pengalaman · ⭐ 4.9', tags:['jantung','kardiologi','kardio'], url:'../doctors/detail.html', color:'linear-gradient(135deg,#0ABAB5,#0891B2)', label:'Dokter' },
+    { id:'d2', name:'Dr. Budi Santoso', sub:'Neurologi · 8 th pengalaman · ⭐ 4.8', tags:['saraf','neurologi','kepala','migrain'], url:'../doctors/detail.html', color:'linear-gradient(135deg,#7C3AED,#2563EB)', label:'Dokter' },
+    { id:'d3', name:'Dr. Anisa Putri', sub:'Dermatologi · 6 th pengalaman · ⭐ 4.7', tags:['kulit','dermatologi','jerawat','akne'], url:'../doctors/detail.html', color:'linear-gradient(135deg,#F78166,#F0C060)', label:'Dokter' },
+    { id:'d4', name:'Dr. Hendra Kusuma', sub:'Umum · 10 th pengalaman · ⭐ 4.6', tags:['umum','demam','flu','batuk'], url:'../doctors/detail.html', color:'linear-gradient(135deg,#16A34A,#0ABAB5)', label:'Dokter' },
+    { id:'d5', name:'Dr. Sari Dewi', sub:'Gizi Klinik · 5 th pengalaman · ⭐ 4.9', tags:['gizi','diet','nutrisi','berat badan'], url:'../doctors/detail.html', color:'linear-gradient(135deg,#F0C060,#F78166)', label:'Dokter' },
+    { id:'d6', name:'Dr. Farhan Malik', sub:'Psikiatri · 9 th pengalaman · ⭐ 4.8', tags:['mental','psikiatri','depresi','stres'], url:'../doctors/detail.html', color:'linear-gradient(135deg,#2563EB,#7C3AED)', label:'Dokter' },
+  ],
+  article: [
+    { id:'a1', name:'7 Cara Menjaga Kesehatan Jantung', sub:'Kardiologi · 5 menit baca', tags:['jantung','kesehatan','kardio'], url:'../health-info/detail.html', color:'linear-gradient(135deg,#FF5C5C,#F78166)', label:'Artikel' },
+    { id:'a2', name:'Panduan Diet Sehat untuk Gen Z', sub:'Nutrisi · 8 menit baca', tags:['diet','gizi','makan sehat','kalori'], url:'../health-info/detail.html', color:'linear-gradient(135deg,#16A34A,#0ABAB5)', label:'Artikel' },
+    { id:'a3', name:'Manfaat Tidur 8 Jam bagi Tubuh', sub:'Kesehatan Umum · 4 menit baca', tags:['tidur','istirahat','tidur cukup'], url:'../health-info/detail.html', color:'linear-gradient(135deg,#7C3AED,#2563EB)', label:'Artikel' },
+    { id:'a4', name:'Cara Mengatasi Stres dan Burnout', sub:'Kesehatan Mental · 6 menit baca', tags:['stres','mental','burnout','anxietas'], url:'../health-info/detail.html', color:'linear-gradient(135deg,#F0C060,#F78166)', label:'Artikel' },
+    { id:'a5', name:'Olahraga 30 Menit: Panduan Pemula', sub:'Kebugaran · 7 menit baca', tags:['olahraga','fitness','gerak','aerobik'], url:'../health-info/detail.html', color:'linear-gradient(135deg,#0ABAB5,#16A34A)', label:'Artikel' },
+  ],
+  pharmacy: [
+    { id:'p1', name:'Paracetamol 500mg', sub:'Obat Bebas · Rp 8.500', tags:['paracetamol','demam','nyeri','sakit kepala'], url:'../pharmacy/detail.html?id=p1', color:'linear-gradient(135deg,#2563EB,#0891B2)', label:'Apotek' },
+    { id:'p2', name:'Vitamin C 1000mg Effervescent', sub:'Suplemen · Rp 65.000', tags:['vitamin c','vitamin','imun','daya tahan'], url:'../pharmacy/detail.html?id=p2', color:'linear-gradient(135deg,#F0C060,#F78166)', label:'Apotek' },
+    { id:'p3', name:'Omeprazole 20mg', sub:'Obat Lambung · Rp 22.000', tags:['maag','lambung','omeprazole','gerd'], url:'../pharmacy/detail.html?id=p3', color:'linear-gradient(135deg,#16A34A,#0ABAB5)', label:'Apotek' },
+    { id:'p4', name:'Suplemen Zinc + Vitamin D3', sub:'Suplemen · Rp 89.000', tags:['zinc','vitamin d','imun','tulang'], url:'../pharmacy/detail.html?id=p4', color:'linear-gradient(135deg,#7C3AED,#2563EB)', label:'Apotek' },
+    { id:'p5', name:'Cetirizine 10mg (Antihistamin)', sub:'Obat Alergi · Rp 15.000', tags:['alergi','cetirizine','antihistamin','gatal'], url:'../pharmacy/detail.html?id=p5', color:'linear-gradient(135deg,#F78166,#F0C060)', label:'Apotek' },
+  ],
+  lab: [
+    { id:'l1', name:'Paket Cek Darah Lengkap', sub:'8 parameter · Rp 185.000', tags:['cek darah','darah','hematologi','hemoglobin'], url:'../lab/detail.html?id=l1', color:'linear-gradient(135deg,#F78166,#FF5C5C)', label:'Lab' },
+    { id:'l2', name:'Paket Kolesterol & Lipid', sub:'5 parameter · Rp 145.000', tags:['kolesterol','lipid','jantung','hdl','ldl'], url:'../lab/detail.html?id=l2', color:'linear-gradient(135deg,#0ABAB5,#0891B2)', label:'Lab' },
+    { id:'l3', name:'Paket Diabetes Screening', sub:'4 parameter · Rp 125.000', tags:['diabetes','gula darah','hba1c','insulin'], url:'../lab/detail.html?id=l3', color:'linear-gradient(135deg,#D97706,#16A34A)', label:'Lab' },
+    { id:'l4', name:'Paket Tiroid Lengkap', sub:'3 parameter · Rp 210.000', tags:['tiroid','hormon','tsh','t3','t4'], url:'../lab/detail.html?id=l4', color:'linear-gradient(135deg,#7C3AED,#2563EB)', label:'Lab' },
+    { id:'l5', name:'Paket Medical Check Up Dasar', sub:'25 parameter · Rp 399.000', tags:['mcu','medical check up','lengkap'], url:'../lab/detail.html?id=l7', color:'linear-gradient(135deg,#0ABAB5,#16A34A)', label:'Lab' },
+  ],
+};
+
+const CAT_LABELS = { doctor:'Dokter', article:'Artikel', pharmacy:'Produk Apotek', lab:'Paket Lab' };
+const CAT_COLORS = { doctor:'var(--primary)', article:'var(--accent-green)', pharmacy:'var(--accent-blue)', lab:'var(--accent-purple)' };
+let currentCategory = 'all';
+let searchTimer;
+
+function renderRecentTags() {
+  const history = MediZen.storage.get('search_history') || [];
+  const container = document.getElementById('recent-tags');
+  if (!history.length) {
+    container.innerHTML = '<span class="no-recent">Belum ada pencarian</span>';
+    return;
+  }
+  container.innerHTML = history.map(q =>
+    `<span class="recent-tag" onclick="doSearch('${q}')">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.63"/></svg>
+      ${q}
+    </span>`
+  ).join('');
+}
+
+function onSearchInput(val) {
+  document.getElementById('clear-btn').style.display = val ? 'flex' : 'none';
+  clearTimeout(searchTimer);
+  if (!val.trim()) { showDefaultView(); return; }
+  searchTimer = setTimeout(() => performSearch(val.trim()), 300);
+}
+
+function clearSearch() {
+  document.getElementById('search-input').value = '';
+  document.getElementById('clear-btn').style.display = 'none';
+  showDefaultView();
+}
+
+function doSearch(query) {
+  document.getElementById('search-input').value = query;
+  document.getElementById('clear-btn').style.display = 'flex';
+  saveToHistory(query);
+  performSearch(query);
+}
+
+function saveToHistory(query) {
+  let history = MediZen.storage.get('search_history') || [];
+  history = [query, ...history.filter(q => q !== query)].slice(0, 5);
+  MediZen.storage.set('search_history', history);
+}
+
+function performSearch(query) {
+  saveToHistory(query);
+  const q = query.toLowerCase();
+  const results = {};
+  const cats = currentCategory === 'all' ? Object.keys(DATA) : [currentCategory];
+  cats.forEach(cat => {
+    const matches = DATA[cat].filter(item =>
+      item.name.toLowerCase().includes(q) ||
+      item.sub.toLowerCase().includes(q) ||
+      item.tags.some(t => t.includes(q))
+    );
+    if (matches.length) results[cat] = matches;
+  });
+  renderResults(results, query);
+}
+
+function highlight(text, query) {
+  if (!query) return text;
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1) return text;
+  return text.slice(0, idx) +
+    `<mark style="background:rgba(10,186,181,0.2);color:var(--primary);border-radius:3px;padding:0 2px">${text.slice(idx, idx + query.length)}</mark>` +
+    text.slice(idx + query.length);
+}
+
+function renderResults(results, query) {
+  document.getElementById('default-view').style.display = 'none';
+  document.getElementById('empty-view').style.display = 'none';
+
+  const total = Object.values(results).reduce((s, a) => s + a.length, 0);
+  if (total === 0) {
+    document.getElementById('results-view').style.display = 'none';
+    document.getElementById('empty-view').style.display = 'block';
+    document.getElementById('empty-query-txt').textContent = `Tidak ada hasil untuk "${query}". Coba kata kunci lain.`;
+    return;
+  }
+
+  document.getElementById('results-view').style.display = 'block';
+  document.getElementById('results-summary').innerHTML =
+    `<span class="summary-count">${total} hasil</span> untuk <span class="summary-query">"${query}"</span>`;
+
+  document.getElementById('results-container').innerHTML = Object.keys(results).map(cat => `
+    <div class="results-group">
+      <div class="results-cat-header">
+        <span class="results-cat-name" style="color:${CAT_COLORS[cat]}">${CAT_LABELS[cat]}</span>
+        <span class="results-cat-count">${results[cat].length} hasil</span>
+      </div>
+      ${results[cat].map(item => `
+        <a href="${item.url}" class="result-card">
+          <div class="result-thumb" style="background:${item.color}">${item.name.slice(0,2).toUpperCase()}</div>
+          <div class="result-info">
+            <div class="result-name">${highlight(item.name, query)}</div>
+            <div class="result-sub">${item.sub}</div>
+          </div>
+          <div class="result-arrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </a>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function showDefaultView() {
+  document.getElementById('default-view').style.display = 'block';
+  document.getElementById('results-view').style.display = 'none';
+  document.getElementById('empty-view').style.display = 'none';
+  renderRecentTags();
+}
+
+function setCategory(cat, el) {
+  currentCategory = cat;
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  const q = document.getElementById('search-input').value.trim();
+  if (q) performSearch(q);
+}
+
+renderRecentTags();
+</script>
+</body>
+</html>

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Catatan Kesehatan — MediZen</title>
+<link rel="stylesheet" href="health-record.css">
+</head>
+<body>
+<div class="app-shell">
+  <div class="hr-page" id="hr-page">
+
+    <!-- Header -->
+    <div class="hr-header">
+      <div class="hr-title">Catatan Kesehatan</div>
+      <div style="display:flex;gap:8px;">
+        <button class="icon-btn" onclick="openExportModal()" title="Ekspor data">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <a href="../home/index.html" class="icon-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Summary Card -->
+    <div class="hr-summary">
+      <div class="summary-label">Ringkasan Hari Ini</div>
+      <div class="summary-date" id="today-date"></div>
+      <div class="summary-grid">
+        <div class="summary-metric">
+          <div class="sm-icon">❤️</div>
+          <div class="sm-value" id="sum-hr" style="color:var(--error)">72</div>
+          <div class="sm-label">Detak Jantung</div>
+          <div class="sm-unit">bpm</div>
+          <div class="sm-status status-normal">Normal</div>
+        </div>
+        <div class="summary-metric">
+          <div class="sm-icon">🩸</div>
+          <div class="sm-value" id="sum-bp" style="color:var(--accent-orange)">120/80</div>
+          <div class="sm-label">Tekanan Darah</div>
+          <div class="sm-unit">mmHg</div>
+          <div class="sm-status status-normal">Optimal</div>
+        </div>
+        <div class="summary-metric">
+          <div class="sm-icon">⚖️</div>
+          <div class="sm-value" id="sum-wt" style="color:var(--accent-blue)">65</div>
+          <div class="sm-label">Berat Badan</div>
+          <div class="sm-unit">kg</div>
+          <div class="sm-status status-normal">Ideal</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Record -->
+    <button class="add-record-btn" onclick="openAddModal()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Tambah Data Kesehatan
+    </button>
+
+    <!-- Metric Type Cards -->
+    <div style="padding:0 20px 10px;">
+      <div style="font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:12px;">Pilih Metrik</div>
+    </div>
+    <div class="metric-cards" id="metric-cards">
+      <div class="metric-card active" onclick="selectMetric('hr', this)">
+        <div class="mc-icon" style="background:rgba(255,92,92,0.12);">❤️</div>
+        <div class="mc-label">Detak Jantung</div>
+        <div class="mc-value" id="mc-hr" style="color:var(--error);">72</div>
+        <div class="mc-unit">bpm</div>
+        <div class="mc-trend trend-stable" id="mc-hr-trend">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Stabil
+        </div>
+      </div>
+      <div class="metric-card" onclick="selectMetric('bp', this)">
+        <div class="mc-icon" style="background:rgba(247,129,102,0.12);">🩸</div>
+        <div class="mc-label">Tekanan Darah</div>
+        <div class="mc-value" id="mc-bp" style="color:var(--accent-orange);font-size:16px;">120/80</div>
+        <div class="mc-unit">mmHg</div>
+        <div class="mc-trend trend-down">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          Menurun
+        </div>
+      </div>
+      <div class="metric-card" onclick="selectMetric('wt', this)">
+        <div class="mc-icon" style="background:rgba(88,166,255,0.12);">⚖️</div>
+        <div class="mc-label">Berat Badan</div>
+        <div class="mc-value" id="mc-wt" style="color:var(--accent-blue);">65</div>
+        <div class="mc-unit">kg</div>
+        <div class="mc-trend trend-stable">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Stabil
+        </div>
+      </div>
+      <div class="metric-card" onclick="selectMetric('bg', this)">
+        <div class="mc-icon" style="background:rgba(57,211,83,0.12);">🍬</div>
+        <div class="mc-label">Gula Darah</div>
+        <div class="mc-value" id="mc-bg" style="color:var(--accent-green);">95</div>
+        <div class="mc-unit">mg/dL</div>
+        <div class="mc-trend trend-stable">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Normal
+        </div>
+      </div>
+      <div class="metric-card" onclick="selectMetric('oxy', this)">
+        <div class="mc-icon" style="background:rgba(10,186,181,0.12);">🫁</div>
+        <div class="mc-label">Saturasi O2</div>
+        <div class="mc-value" id="mc-oxy" style="color:var(--primary);">98</div>
+        <div class="mc-unit">%</div>
+        <div class="mc-trend trend-stable">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Optimal
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-section">
+      <div class="chart-header">
+        <div class="chart-title" id="chart-title">Detak Jantung</div>
+        <div class="chart-period">
+          <button class="period-btn active" onclick="setPeriod('7d', this)">7H</button>
+          <button class="period-btn" onclick="setPeriod('30d', this)">30H</button>
+          <button class="period-btn" onclick="setPeriod('3m', this)">3B</button>
+        </div>
+      </div>
+      <div class="chart-box">
+        <canvas class="chart-canvas" id="main-chart"></canvas>
+        <div id="chart-legend" style="display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="history-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div class="history-title" id="history-title">Riwayat Detak Jantung</div>
+      </div>
+      <div class="history-list" id="history-list">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Add Record Modal -->
+  <div class="modal-overlay" id="add-modal" onclick="closeModalOutside(event)">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="modal-title">Tambah Data</div>
+      <div class="modal-fields" id="modal-fields">
+        <!-- Dynamic fields -->
+      </div>
+      <div style="margin-top:24px;display:flex;gap:10px;">
+        <button class="btn btn-ghost" style="flex:1;" onclick="closeModal()">Batal</button>
+        <button class="btn btn-primary" style="flex:2;" onclick="saveRecord()" id="save-btn">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Modal -->
+  <div class="modal-overlay" id="export-modal" onclick="closeExportOutside(event)">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Ekspor Data Kesehatan</div>
+      <p style="font-size:14px;color:var(--text-secondary);margin-bottom:20px;line-height:1.6;">Bagikan ringkasan data kesehatanmu kepada dokter atau simpan sebagai referensi pribadi.</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="btn btn-primary btn-full" onclick="exportData('pdf')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Ekspor sebagai PDF
+        </button>
+        <button class="btn btn-ghost btn-full" onclick="exportData('share')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Bagikan ke Dokter
+        </button>
+      </div>
+      <button class="btn btn-ghost btn-full" style="margin-top:10px;" onclick="closeExportModal()">Tutup</button>
+    </div>
+  </div>
+
+  <!-- Chatbot FAB -->
+  <a href="../chatbot/index.html" class="chatbot-fab">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  </a>
+
+  <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+    <a href="../home/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="nav-label">Beranda</span>
+    </a>
+    <a href="../search/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="nav-label">Search</span>
+    </a>
+    <a href="../doctors/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Dokter</span>
+    </a>
+    <a href="../chatbot/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="nav-label">AI Chat</span>
+    </a>
+    <a href="../profile/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Profil</span>
+    </a>
+  </nav>
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script>
+if (!MediZen.auth.isLoggedIn()) window.location.href = '../auth/login.html';
+
+// ---- Data ----
+let currentMetric = 'hr';
+let currentPeriod = '7d';
+
+const METRIC_CONFIG = {
+  hr:  { label: 'Detak Jantung', unit: 'bpm', color: '#DC2626', emoji: '❤️', bg: 'rgba(255,92,92,0.12)', normalRange: [60,100], normalLabel: 'Normal: 60-100 bpm' },
+  bp:  { label: 'Tekanan Darah', unit: 'mmHg', color: '#F78166', emoji: '🩸', bg: 'rgba(247,129,102,0.12)', normalRange: [90,120], normalLabel: 'Optimal: <120/80 mmHg' },
+  wt:  { label: 'Berat Badan', unit: 'kg', color: '#58A6FF', emoji: '⚖️', bg: 'rgba(88,166,255,0.12)', normalRange: [50,90], normalLabel: 'Berdasarkan IMT ideal' },
+  bg:  { label: 'Gula Darah', unit: 'mg/dL', color: '#16A34A', emoji: '🍬', bg: 'rgba(57,211,83,0.12)', normalRange: [70,110], normalLabel: 'Puasa: 70-110 mg/dL' },
+  oxy: { label: 'Saturasi O2', unit: '%', color: '#0ABAB5', emoji: '🫁', bg: 'rgba(10,186,181,0.12)', normalRange: [95,100], normalLabel: 'Normal: 95-100%' },
+};
+
+const DEFAULT_HISTORY = {
+  hr:  [72, 75, 71, 68, 74, 76, 72],
+  bp:  [120, 118, 122, 125, 119, 115, 120],
+  wt:  [65.2, 65.0, 65.5, 65.3, 64.8, 65.1, 65.0],
+  bg:  [95, 98, 92, 100, 88, 94, 95],
+  oxy: [98, 97, 99, 98, 98, 97, 98],
+};
+
+function getHistory() {
+  const stored = MediZen.storage.get('health_records') || {};
+  const history = {};
+  Object.keys(METRIC_CONFIG).forEach(k => {
+    history[k] = stored[k] ? stored[k].map(r => parseFloat(r.value)) : [...DEFAULT_HISTORY[k]];
+  });
+  return history;
+}
+
+function getRecords() {
+  return MediZen.storage.get('health_records') || {};
+}
+
+// ---- Date ----
+document.getElementById('today-date').textContent = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+// ---- Metric selection ----
+function selectMetric(key, el) {
+  currentMetric = key;
+  document.querySelectorAll('.metric-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  const cfg = METRIC_CONFIG[key];
+  document.getElementById('chart-title').textContent = cfg.label;
+  document.getElementById('history-title').textContent = 'Riwayat ' + cfg.label;
+  renderChart();
+  renderHistory();
+}
+
+// ---- Chart (pure canvas, no library needed) ----
+function renderChart() {
+  const canvas = document.getElementById('main-chart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.offsetWidth;
+  const h = canvas.offsetHeight;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  ctx.scale(dpr, dpr);
+
+  const history = getHistory();
+  const cfg = METRIC_CONFIG[currentMetric];
+  let data = history[currentMetric] || DEFAULT_HISTORY[currentMetric];
+
+  // Padding
+  const px = 10, py = 16;
+  const cw = w - px * 2;
+  const ch = h - py * 2;
+
+  const min = Math.min(...data) * 0.95;
+  const max = Math.max(...data) * 1.05;
+  const range = max - min || 1;
+
+  const pts = data.map((v, i) => ({
+    x: px + (i / (data.length - 1)) * cw,
+    y: py + ch - ((v - min) / range) * ch
+  }));
+
+  ctx.clearRect(0, 0, w, h);
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = py + (ch / 4) * i;
+    ctx.beginPath(); ctx.moveTo(px, y); ctx.lineTo(px + cw, y); ctx.stroke();
+  }
+
+  // Area fill
+  const grad = ctx.createLinearGradient(0, py, 0, py + ch);
+  grad.addColorStop(0, cfg.color + '40');
+  grad.addColorStop(1, cfg.color + '00');
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) {
+    const cp1x = (pts[i-1].x + pts[i].x) / 2;
+    ctx.bezierCurveTo(cp1x, pts[i-1].y, cp1x, pts[i].y, pts[i].x, pts[i].y);
+  }
+  ctx.lineTo(pts[pts.length-1].x, py + ch);
+  ctx.lineTo(pts[0].x, py + ch);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) {
+    const cp1x = (pts[i-1].x + pts[i].x) / 2;
+    ctx.bezierCurveTo(cp1x, pts[i-1].y, cp1x, pts[i].y, pts[i].x, pts[i].y);
+  }
+  ctx.strokeStyle = cfg.color;
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  // Points
+  pts.forEach((pt, i) => {
+    ctx.beginPath();
+    ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = cfg.color;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(pt.x, pt.y, 2, 0, Math.PI * 2);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fill();
+  });
+
+  // Legend
+  const labels7 = ['7H lalu', '6H', '5H', '4H', '3H', 'Kemarin', 'Hari ini'];
+  document.getElementById('chart-legend').innerHTML = `
+    <span style="font-size:11px;color:var(--text-muted);">${cfg.normalLabel}</span>
+    <span style="font-size:11px;color:${cfg.color};font-weight:700;">${data[data.length-1]} ${cfg.unit}</span>
+  `;
+}
+
+// ---- History rendering ----
+function renderHistory() {
+  const cfg = METRIC_CONFIG[currentMetric];
+  const records = getRecords();
+  const stored = records[currentMetric] || [];
+
+  const defaultDates = [-6,-5,-4,-3,-2,-1,0].map(d => {
+    const dt = new Date();
+    dt.setDate(dt.getDate() + d);
+    return dt;
+  });
+
+  let items = stored.length > 0
+    ? stored.slice().reverse().slice(0, 10)
+    : DEFAULT_HISTORY[currentMetric].map((v, i) => ({
+        value: v,
+        date: defaultDates[i].toISOString(),
+        note: i === 6 ? 'Data hari ini' : ''
+      }));
+
+  const list = document.getElementById('history-list');
+  list.innerHTML = items.map(item => {
+    const val = parseFloat(item.value);
+    const [lo, hi] = cfg.normalRange;
+    let statusClass = 'status-normal', statusLabel = 'Normal';
+    if (currentMetric === 'hr') {
+      if (val < 60) { statusClass = 'status-warning'; statusLabel = 'Rendah'; }
+      else if (val > 100) { statusClass = 'status-danger'; statusLabel = 'Tinggi'; }
+    } else if (currentMetric === 'bp') {
+      if (val > 130) { statusClass = 'status-danger'; statusLabel = 'Tinggi'; }
+      else if (val < 90) { statusClass = 'status-warning'; statusLabel = 'Rendah'; }
+    } else if (currentMetric === 'oxy') {
+      if (val < 95) { statusClass = 'status-danger'; statusLabel = 'Rendah'; }
+    } else if (currentMetric === 'bg') {
+      if (val > 126) { statusClass = 'status-danger'; statusLabel = 'Tinggi'; }
+      else if (val < 70) { statusClass = 'status-warning'; statusLabel = 'Rendah'; }
+    }
+
+    return `
+      <div class="history-item">
+        <div class="history-dot" style="background:${cfg.bg}">${cfg.emoji}</div>
+        <div class="history-body">
+          <div class="history-val" style="color:${cfg.color}">${item.value} <span style="font-size:12px;color:var(--text-muted);font-weight:400;">${cfg.unit}</span></div>
+          <div class="history-date">${MediZen.formatDate(item.date)}</div>
+          ${item.note ? `<div class="history-note">${item.note}</div>` : ''}
+        </div>
+        <div class="history-status"><span class="sm-status ${statusClass}">${statusLabel}</span></div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ---- Period ----
+function setPeriod(p, el) {
+  currentPeriod = p;
+  document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderChart();
+}
+
+// ---- Add Modal ----
+let activeModalMetric = 'hr';
+
+function openAddModal() {
+  activeModalMetric = currentMetric;
+  const cfg = METRIC_CONFIG[activeModalMetric];
+  document.getElementById('modal-title').textContent = 'Tambah ' + cfg.label;
+
+  let fieldsHtml = '';
+  if (activeModalMetric === 'bp') {
+    fieldsHtml = `
+      <div class="input-group">
+        <label class="input-label">Tekanan Sistolik (mmHg)</label>
+        <div class="input-wrapper">
+          <input type="number" id="field-systolic" class="input-field" placeholder="120" min="60" max="250">
+        </div>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Tekanan Diastolik (mmHg)</label>
+        <div class="input-wrapper">
+          <input type="number" id="field-diastolic" class="input-field" placeholder="80" min="40" max="150">
+        </div>
+      </div>
+    `;
+  } else {
+    fieldsHtml = `
+      <div class="input-group">
+        <label class="input-label">${cfg.label} (${cfg.unit})</label>
+        <div class="input-wrapper">
+          <input type="number" id="field-value" class="input-field" placeholder="Masukkan nilai..." step="0.1">
+        </div>
+      </div>
+    `;
+  }
+  fieldsHtml += `
+    <div class="input-group">
+      <label class="input-label">Kondisi Pengukuran (opsional)</label>
+      <div class="unit-row">
+        <button class="unit-btn active" onclick="selectCondition(this, 'Istirahat')">Istirahat</button>
+        <button class="unit-btn" onclick="selectCondition(this, 'Setelah Olahraga')">Setelah Olahraga</button>
+        <button class="unit-btn" onclick="selectCondition(this, 'Pagi Hari')">Pagi</button>
+        <button class="unit-btn" onclick="selectCondition(this, 'Malam Hari')">Malam</button>
+      </div>
+    </div>
+    <div class="input-group">
+      <label class="input-label">Catatan (opsional)</label>
+      <div class="input-wrapper">
+        <input type="text" id="field-note" class="input-field" placeholder="Tambahkan catatan...">
+      </div>
+    </div>
+  `;
+
+  document.getElementById('modal-fields').innerHTML = fieldsHtml;
+  document.getElementById('add-modal').classList.add('open');
+}
+
+let selectedCondition = 'Istirahat';
+function selectCondition(el, val) {
+  selectedCondition = val;
+  document.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('add-modal').classList.remove('open');
+}
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('add-modal')) closeModal();
+}
+
+function saveRecord() {
+  const cfg = METRIC_CONFIG[activeModalMetric];
+  let value;
+
+  if (activeModalMetric === 'bp') {
+    const sys = document.getElementById('field-systolic').value;
+    const dia = document.getElementById('field-diastolic').value;
+    if (!sys || !dia) { MediZen.toast('Isi semua nilai tekanan darah', 'error'); return; }
+    value = sys + '/' + dia;
+  } else {
+    const v = document.getElementById('field-value').value;
+    if (!v) { MediZen.toast('Nilai tidak boleh kosong', 'error'); return; }
+    value = parseFloat(v);
+  }
+
+  const note = document.getElementById('field-note').value;
+  const record = { value, date: new Date().toISOString(), condition: selectedCondition, note };
+
+  const records = getRecords();
+  if (!records[activeModalMetric]) records[activeModalMetric] = [];
+  records[activeModalMetric].push(record);
+  MediZen.storage.set('health_records', records);
+
+  // Update summary card
+  if (activeModalMetric === 'hr') document.getElementById('sum-hr').textContent = value;
+  if (activeModalMetric === 'bp') document.getElementById('sum-bp').textContent = value;
+  if (activeModalMetric === 'wt') document.getElementById('sum-wt').textContent = value;
+  if (activeModalMetric === 'mc-' + activeModalMetric) document.getElementById('mc-' + activeModalMetric).textContent = value;
+
+  closeModal();
+  renderChart();
+  renderHistory();
+  MediZen.toast('Data berhasil disimpan!', 'success');
+}
+
+// Export modal
+function openExportModal() {
+  document.getElementById('export-modal').classList.add('open');
+}
+function closeExportModal() {
+  document.getElementById('export-modal').classList.remove('open');
+}
+function closeExportOutside(e) {
+  if (e.target === document.getElementById('export-modal')) closeExportModal();
+}
+function exportData(type) {
+  closeExportModal();
+  MediZen.toast(type === 'pdf' ? 'Fitur ekspor PDF segera hadir!' : 'Fitur berbagi ke dokter segera hadir!', 'info');
+}
+
+// ---- Init ----
+renderChart();
+renderHistory();
+
+window.addEventListener('resize', renderChart);
+</script>
+</body>
+</html>

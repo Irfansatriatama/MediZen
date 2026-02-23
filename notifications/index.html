@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Notifikasi — MediZen</title>
+<link rel="stylesheet" href="notifications.css">
+</head>
+<body>
+<div class="app-shell">
+  <div class="notif-page">
+
+    <!-- Header -->
+    <div class="notif-header">
+      <a href="../home/index.html" class="icon-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </a>
+      <div class="notif-header-left">
+        <div class="notif-header-title">Notifikasi</div>
+        <div class="unread-pill" id="unread-pill" style="display:none">0 baru</div>
+      </div>
+      <button class="mark-all-btn" onclick="markAllRead()">Baca Semua</button>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="notif-filters">
+      <div class="filter-chip active" data-filter="all" onclick="setFilter('all', this)">Semua</div>
+      <div class="filter-chip" data-filter="unread" onclick="setFilter('unread', this)">Belum Dibaca</div>
+      <div class="filter-chip" data-filter="schedule" onclick="setFilter('schedule', this)">Jadwal</div>
+      <div class="filter-chip" data-filter="tips" onclick="setFilter('tips', this)">Tips</div>
+      <div class="filter-chip" data-filter="system" onclick="setFilter('system', this)">Sistem</div>
+    </div>
+
+    <!-- List -->
+    <div class="notif-list" id="notif-list"></div>
+
+  </div>
+
+  <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+    <a href="../home/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="nav-label">Beranda</span>
+    </a>
+    <a href="../search/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="nav-label">Search</span>
+    </a>
+    <a href="../doctors/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Dokter</span>
+    </a>
+    <a href="../chatbot/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="nav-label">AI Chat</span>
+    </a>
+    <a href="../profile/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Profil</span>
+    </a>
+  </nav>
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script>
+if (!MediZen.auth.isLoggedIn()) window.location.href = '../auth/login.html';
+
+const SEED = [
+  {
+    id:'n1', category:'schedule',
+    title:'Jadwal Konsultasi Besok 📅',
+    desc:'Kamu punya janji dengan Dr. Anisa Putri besok pukul 09:00. Jangan sampai terlewat ya!',
+    time: Date.now() - 3600000 * 2, read: false
+  },
+  {
+    id:'n2', category:'schedule',
+    title:'Reminder: 2 Jam Lagi Konsultasi',
+    desc:'Sesi konsultasimu dengan Dr. Anisa Putri (Dermatologi) dimulai dalam 2 jam. Pastikan koneksimu stabil.',
+    time: Date.now() - 3600000 * 5, read: false
+  },
+  {
+    id:'n3', category:'tips',
+    title:'Tips Kesehatan Hari Ini 🌿',
+    desc:'Minum air putih minimal 8 gelas sehari dapat meningkatkan konsentrasi, metabolisme, dan menjaga kulit tetap sehat.',
+    time: Date.now() - 86400000, read: false
+  },
+  {
+    id:'n4', category:'medicine',
+    title:'Waktunya Minum Vitamin! 💊',
+    desc:'Jangan lupa minum vitamin C harianmu. Konsistensi adalah kunci untuk menjaga imunitas tubuh tetap optimal.',
+    time: Date.now() - 86400000 * 1.5, read: true
+  },
+  {
+    id:'n5', category:'system',
+    title:'Fitur Baru: Laboratorium Online 🔬',
+    desc:'Sekarang kamu bisa booking paket pemeriksaan lab langsung dari MediZen. Cek koleksi paket lengkapnya!',
+    time: Date.now() - 86400000 * 2, read: true
+  },
+  {
+    id:'n6', category:'tips',
+    title:'Jaga Kesehatan Mentalmu 🧘',
+    desc:'Luangkan 10 menit sehari untuk meditasi atau menulis jurnal perasaan. Kesehatan mental sama pentingnya dengan fisik!',
+    time: Date.now() - 86400000 * 3, read: true
+  },
+  {
+    id:'n7', category:'system',
+    title:'Profil Kamu Belum Lengkap ✏️',
+    desc:'Lengkapi data dirimu seperti tanggal lahir dan golongan darah agar pengalaman MediZen lebih personal dan akurat.',
+    time: Date.now() - 86400000 * 5, read: true
+  },
+  {
+    id:'n8', category:'medicine',
+    title:'Jadwal Obat Malam Ini 🌙',
+    desc:'Waktunya minum obat malam. Tetap konsisten dengan jadwal obatmu untuk hasil pengobatan yang optimal.',
+    time: Date.now() - 86400000 * 7, read: true
+  },
+];
+
+const CAT_CONFIG = {
+  schedule: {
+    color: 'rgba(10,186,181,0.15)', stroke: '#0ABAB5',
+    icon: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>'
+  },
+  tips: {
+    color: 'rgba(22,163,74,0.1)', stroke: '#16A34A',
+    icon: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>'
+  },
+  medicine: {
+    color: 'rgba(37,99,235,0.1)', stroke: '#2563EB',
+    icon: '<path d="M10.5 20H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H20a2 2 0 0 1 2 2v3"/><circle cx="18" cy="18" r="4"/><path d="M18 14v8"/><path d="M14 18h8"/>'
+  },
+  system: {
+    color: 'rgba(124,58,237,0.1)', stroke: '#7C3AED',
+    icon: '<circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>'
+  },
+};
+
+let currentFilter = 'all';
+
+function loadNotifs() {
+  if (!MediZen.storage.get('notifications')) {
+    MediZen.storage.set('notifications', SEED);
+  }
+  return MediZen.storage.get('notifications') || SEED;
+}
+
+function updateUnreadPill(notifs) {
+  const count = notifs.filter(n => !n.read).length;
+  const pill = document.getElementById('unread-pill');
+  if (count > 0) {
+    pill.textContent = count + ' baru';
+    pill.style.display = 'flex';
+  } else {
+    pill.style.display = 'none';
+  }
+}
+
+function renderNotifs() {
+  let notifs = loadNotifs();
+  updateUnreadPill(notifs);
+
+  let filtered = notifs;
+  if (currentFilter === 'unread') filtered = notifs.filter(n => !n.read);
+  else if (currentFilter !== 'all') filtered = notifs.filter(n => n.category === currentFilter);
+
+  const container = document.getElementById('notif-list');
+  if (!filtered.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+        </div>
+        <div class="empty-title">${currentFilter === 'unread' ? 'Semua sudah dibaca!' : 'Tidak ada notifikasi'}</div>
+        <div class="empty-desc">${currentFilter === 'unread' ? 'Kamu sudah membaca semua notifikasi.' : 'Tidak ada notifikasi di kategori ini.'}</div>
+      </div>`;
+    return;
+  }
+
+  // Group by date
+  const groups = {};
+  filtered.forEach(n => {
+    const date = new Date(n.time);
+    const today = new Date();
+    const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
+    let label;
+    if (date.toDateString() === today.toDateString()) label = 'Hari Ini';
+    else if (date.toDateString() === yesterday.toDateString()) label = 'Kemarin';
+    else label = MediZen.formatDateShort(n.time);
+    if (!groups[label]) groups[label] = [];
+    groups[label].push(n);
+  });
+
+  container.innerHTML = Object.keys(groups).map(label => `
+    <div class="notif-date-group">
+      <div class="notif-date-label">${label}</div>
+      ${groups[label].map(n => {
+        const cfg = CAT_CONFIG[n.category] || CAT_CONFIG.system;
+        return `<div class="notif-item ${n.read ? '' : 'unread'}" onclick="markRead('${n.id}')">
+          <div class="notif-icon" style="background:${cfg.color}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${cfg.stroke}" stroke-width="2" stroke-linecap="round">${cfg.icon}</svg>
+          </div>
+          <div class="notif-content">
+            <div class="notif-title">${n.title}</div>
+            <div class="notif-desc">${n.desc}</div>
+            <div class="notif-time">${MediZen.timeAgo(n.time)}</div>
+          </div>
+          <button class="notif-del" onclick="deleteNotif(event,'${n.id}')" title="Hapus">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>`;
+      }).join('')}
+    </div>
+  `).join('');
+}
+
+function markRead(id) {
+  const notifs = loadNotifs();
+  const n = notifs.find(x => x.id === id);
+  if (n && !n.read) {
+    n.read = true;
+    MediZen.storage.set('notifications', notifs);
+    renderNotifs();
+  }
+}
+
+function markAllRead() {
+  const notifs = loadNotifs().map(n => ({ ...n, read: true }));
+  MediZen.storage.set('notifications', notifs);
+  MediZen.toast('Semua notifikasi ditandai sudah dibaca', 'success');
+  renderNotifs();
+}
+
+function deleteNotif(e, id) {
+  e.stopPropagation();
+  const notifs = loadNotifs().filter(n => n.id !== id);
+  MediZen.storage.set('notifications', notifs);
+  renderNotifs();
+}
+
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderNotifs();
+}
+
+renderNotifs();
+</script>
+</body>
+</html>

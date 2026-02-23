@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Apotek Online — MediZen</title>
+<link rel="stylesheet" href="pharmacy.css">
+</head>
+<body>
+<div class="app-shell">
+  <div class="pharmacy-page">
+
+    <!-- Header -->
+    <div class="pharmacy-header">
+      <a href="../home/index.html" class="icon-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </a>
+      <div class="pharmacy-title">Apotek Online</div>
+      <a href="../search/index.html" class="icon-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </a>
+      <div class="cart-btn" onclick="openCart()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <div class="cart-badge hidden" id="cart-badge">0</div>
+      </div>
+    </div>
+
+    <!-- Banner Promo -->
+    <div class="pharma-banner">
+      <div class="banner-content">
+        <div class="banner-eyebrow">💊 Gratis Ongkir</div>
+        <div class="banner-title">Obat dan Suplemen<br>Diantar ke Rumah</div>
+        <div class="banner-desc">Pembelian min. Rp 75.000 gratis ongkos kirim</div>
+        <div class="banner-chips">
+          <span class="banner-chip">🚚 Same Day</span>
+          <span class="banner-chip">BPOM ✅</span>
+          <span class="banner-chip">⚡ 2.000+ Produk</span>
+        </div>
+      </div>
+      <div class="banner-deco">💊</div>
+    </div>
+
+    <!-- Quick stats -->
+    <div class="pharma-stats">
+      <div class="pharma-stat">
+        <div class="pharma-stat-val">2.400+</div>
+        <div class="pharma-stat-lbl">Produk</div>
+      </div>
+      <div class="pharma-stat-sep"></div>
+      <div class="pharma-stat">
+        <div class="pharma-stat-val">4.8⭐</div>
+        <div class="pharma-stat-lbl">Rating</div>
+      </div>
+      <div class="pharma-stat-sep"></div>
+      <div class="pharma-stat">
+        <div class="pharma-stat-val">&lt; 3 jam</div>
+        <div class="pharma-stat-lbl">Pengiriman</div>
+      </div>
+      <div class="pharma-stat-sep"></div>
+      <div class="pharma-stat">
+        <div class="pharma-stat-val">BPOM</div>
+        <div class="pharma-stat-lbl">Terverifikasi</div>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="pharma-search-wrap">
+      <div class="input-wrapper has-icon">
+        <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="input-field" id="search-input" placeholder="Cari obat, vitamin, suplemen..." oninput="onSearch(this.value)">
+        <div class="search-clear hidden" id="search-clear" onclick="clearSearch()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category chips -->
+    <div class="pharma-cats">
+      <div class="pharma-cat active" onclick="setCat('all', this)">Semua</div>
+      <div class="pharma-cat" onclick="setCat('obat', this)">💊 Obat Bebas</div>
+      <div class="pharma-cat" onclick="setCat('vitamin', this)">🍊 Vitamin</div>
+      <div class="pharma-cat" onclick="setCat('suplemen', this)">💪 Suplemen</div>
+      <div class="pharma-cat" onclick="setCat('alkes', this)">🩺 Alkes</div>
+      <div class="pharma-cat" onclick="setCat('skincare', this)">✨ Skincare</div>
+    </div>
+
+    <!-- Count + sort -->
+    <div class="count-row">
+      <span id="count-txt">Menampilkan 12 produk</span>
+      <div class="sort-btn" onclick="cycleSortMode()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        <span id="sort-label">Populer</span>
+      </div>
+    </div>
+
+    <!-- Products grid -->
+    <div class="products-grid" id="products-grid"></div>
+
+    <!-- Empty state -->
+    <div id="empty-state" class="empty-state hidden">
+      <div class="empty-emoji">🔍</div>
+      <div class="empty-title">Produk tidak ditemukan</div>
+      <div class="empty-desc">Coba kata kunci lain atau ubah filter kategori</div>
+      <button class="btn btn-outline btn-sm" style="margin-top:14px" onclick="resetFilter()">Tampilkan Semua</button>
+    </div>
+
+    <!-- Floating cart -->
+    <div class="float-cart hidden" id="float-cart" onclick="openCart()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <span>Lihat Keranjang</span>
+      <span class="float-cart-badge" id="float-badge">0 item</span>
+    </div>
+
+  </div>
+
+  <!-- Cart modal -->
+  <div class="cart-modal" id="cart-modal">
+    <div class="cart-sheet">
+      <div class="cart-handle"></div>
+      <div class="cart-head">
+        <div class="cart-title">Keranjang Belanja 🛒</div>
+        <button class="icon-btn" onclick="closeCart()" style="border:none;background:var(--bg-elevated);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="cart-body" id="cart-body"></div>
+      <div class="cart-foot" id="cart-foot" style="display:none">
+        <div class="shipping-bar" id="shipping-bar">
+          <span id="shipping-status">🚚 Tambah lebih banyak untuk gratis ongkir</span>
+        </div>
+        <div class="cart-total">
+          <div>
+            <div style="color:var(--text-muted);font-size:11px;margin-bottom:2px">Total Pembayaran</div>
+            <div class="cart-total-val" id="cart-total">Rp 0</div>
+          </div>
+          <button class="btn btn-primary" onclick="doCheckout()" style="padding:12px 20px;gap:6px">
+            Checkout
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success overlay -->
+  <div class="success-overlay hidden" id="success-overlay">
+    <div class="success-card">
+      <div class="success-icon-wrap">
+        <div class="success-checkmark">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      </div>
+      <div class="success-title">Pesanan Berhasil!</div>
+      <div class="success-subtitle">Pesananmu sedang diproses oleh apotek kami</div>
+      <div class="success-details">
+        <div class="success-detail-row">
+          <span>No. Pesanan</span>
+          <span id="order-number" style="font-weight:700;color:var(--primary)">#MZ-0000</span>
+        </div>
+        <div class="success-detail-row">
+          <span>Estimasi Pengiriman</span>
+          <span style="font-weight:600">1–3 jam</span>
+        </div>
+        <div class="success-detail-row">
+          <span>Metode Pembayaran</span>
+          <span style="font-weight:600">COD / Transfer</span>
+        </div>
+        <div class="success-detail-row">
+          <span>Total Bayar</span>
+          <span id="success-total" style="font-weight:700;color:var(--accent-blue)">Rp 0</span>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="closeSuccess()">Lanjut Belanja</button>
+      <a href="../home/index.html" class="btn btn-outline btn-full" style="margin-top:10px">Ke Beranda</a>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+    <a href="../home/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="nav-label">Beranda</span>
+    </a>
+    <a href="../search/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="nav-label">Search</span>
+    </a>
+    <a href="../doctors/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Dokter</span>
+    </a>
+    <a href="../chatbot/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="nav-label">AI Chat</span>
+    </a>
+    <a href="../profile/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Profil</span>
+    </a>
+  </nav>
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script>
+if (!MediZen.auth.isLoggedIn()) window.location.href = '../auth/login.html';
+
+const PRODUCTS = [
+  { id:'p1', name:'Paracetamol 500mg', brand:'Generik', category:'obat', icon:'💊', price:8500, rating:4.8, sold:1240, stock:500, tag:'Terlaris' },
+  { id:'p2', name:'Vitamin C 1000mg Effervescent', brand:'Enervon-C', category:'vitamin', icon:'🍊', price:65000, rating:4.9, sold:980, stock:200, tag:'Terbaik' },
+  { id:'p3', name:'Omeprazole 20mg', brand:'Generik', category:'obat', icon:'💊', price:22000, rating:4.6, sold:560, stock:150, tag:'' },
+  { id:'p4', name:'Zinc + Vitamin D3 Kapsul', brand:'Blackmores', category:'suplemen', icon:'💪', price:89000, rating:4.7, sold:430, stock:80, tag:'Promo' },
+  { id:'p5', name:'Ibuprofen 400mg', brand:'Generik', category:'obat', icon:'💊', price:12000, rating:4.5, sold:720, stock:300, tag:'' },
+  { id:'p6', name:'Vitamin B Complex', brand:'Neurobion', category:'vitamin', icon:'🍃', price:35000, rating:4.6, sold:650, stock:250, tag:'' },
+  { id:'p7', name:'Omega-3 Fish Oil 1000mg', brand:'Nu-Salt', category:'suplemen', icon:'🐟', price:115000, rating:4.8, sold:320, stock:60, tag:'Premium' },
+  { id:'p8', name:'Tensimeter Digital', brand:'Omron', category:'alkes', icon:'🩺', price:320000, rating:4.9, sold:180, stock:30, tag:'Best Seller' },
+  { id:'p9', name:'Cetirizine 10mg', brand:'Generik', category:'obat', icon:'💊', price:15000, rating:4.4, sold:890, stock:400, tag:'' },
+  { id:'p10', name:'Masker N95 (isi 10)', brand:'3M', category:'alkes', icon:'😷', price:75000, rating:4.8, sold:540, stock:100, tag:'' },
+  { id:'p11', name:'Sunscreen SPF 50+ PA+++', brand:'Skin1004', category:'skincare', icon:'☀️', price:145000, rating:4.9, sold:760, stock:45, tag:'Trending' },
+  { id:'p12', name:'Probiotik Lacto-B', brand:'Lacto-B', category:'suplemen', icon:'🦠', price:55000, rating:4.7, sold:490, stock:90, tag:'' },
+];
+MediZen.storage.set('products', PRODUCTS);
+
+let currentCat = 'all';
+let searchQ = '';
+let sortMode = 'popular';
+const SORT_MODES = ['popular','price-asc','price-desc','rating'];
+const SORT_LABELS = { popular:'Populer', 'price-asc':'Harga ↑', 'price-desc':'Harga ↓', rating:'Rating' };
+
+function cycleSortMode() {
+  const idx = SORT_MODES.indexOf(sortMode);
+  sortMode = SORT_MODES[(idx + 1) % SORT_MODES.length];
+  document.getElementById('sort-label').textContent = SORT_LABELS[sortMode];
+  renderProducts();
+}
+
+const CAT_GRADIENTS = {
+  obat: 'linear-gradient(135deg,rgba(88,166,255,0.12),rgba(10,186,181,0.04))',
+  vitamin: 'linear-gradient(135deg,rgba(240,192,96,0.15),rgba(57,211,83,0.04))',
+  suplemen: 'linear-gradient(135deg,rgba(57,211,83,0.12),rgba(10,186,181,0.04))',
+  alkes: 'linear-gradient(135deg,rgba(188,140,255,0.12),rgba(88,166,255,0.04))',
+  skincare: 'linear-gradient(135deg,rgba(247,129,102,0.12),rgba(240,192,96,0.04))',
+};
+
+function renderProducts() {
+  let list = [...PRODUCTS];
+  if (currentCat !== 'all') list = list.filter(p => p.category === currentCat);
+  if (searchQ) list = list.filter(p =>
+    p.name.toLowerCase().includes(searchQ) || p.brand.toLowerCase().includes(searchQ)
+  );
+  if (sortMode === 'popular') list.sort((a,b) => b.sold - a.sold);
+  else if (sortMode === 'price-asc') list.sort((a,b) => a.price - b.price);
+  else if (sortMode === 'price-desc') list.sort((a,b) => b.price - a.price);
+  else if (sortMode === 'rating') list.sort((a,b) => b.rating - a.rating);
+
+  const grid = document.getElementById('products-grid');
+  const empty = document.getElementById('empty-state');
+
+  if (!list.length) {
+    grid.innerHTML = '';
+    empty.classList.remove('hidden');
+    document.getElementById('count-txt').textContent = '0 produk ditemukan';
+    return;
+  }
+  empty.classList.add('hidden');
+  document.getElementById('count-txt').textContent = 'Menampilkan ' + list.length + ' produk';
+
+  grid.innerHTML = list.map(p => {
+    const isLowStock = p.stock < 50;
+    const stockTxt = isLowStock ? 'Stok ' + p.stock : 'Stok ' + p.stock + '+';
+    const stockClass = isLowStock ? 'stock-badge low' : 'stock-badge';
+    const tagHtml = p.tag ? '<span class="product-tag">' + p.tag + '</span>' : '';
+    const grad = CAT_GRADIENTS[p.category] || CAT_GRADIENTS.obat;
+    const nameHtml = searchQ
+      ? p.name.replace(new RegExp('(' + searchQ.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi'), '<mark>$1</mark>')
+      : p.name;
+
+    return '<div class="product-card" onclick="window.location.href=\'detail.html?id=' + p.id + '\'">' +
+      '<div class="product-thumb" style="background:' + grad + '">' +
+        tagHtml +
+        '<span class="product-icon">' + p.icon + '</span>' +
+        '<span class="' + stockClass + '">' + stockTxt + '</span>' +
+      '</div>' +
+      '<div class="product-info">' +
+        '<div class="product-name">' + nameHtml + '</div>' +
+        '<div class="product-brand">' + p.brand + '</div>' +
+        '<div class="product-meta">' +
+          '<span class="product-rating">⭐ ' + p.rating + '</span>' +
+          '<span class="product-sold">' + p.sold.toLocaleString('id-ID') + ' terjual</span>' +
+        '</div>' +
+        '<div class="product-footer">' +
+          '<div class="product-price">Rp ' + p.price.toLocaleString('id-ID') + '</div>' +
+          '<div class="add-btn" onclick="event.stopPropagation();addToCart(\'' + p.id + '\')">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  updateCartBadge();
+}
+
+function setCat(cat, el) {
+  currentCat = cat;
+  document.querySelectorAll('.pharma-cat').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderProducts();
+}
+
+let debounceTimer;
+function onSearch(val) {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(function() {
+    searchQ = val.toLowerCase();
+    document.getElementById('search-clear').classList.toggle('hidden', !val);
+    renderProducts();
+  }, 300);
+}
+
+function clearSearch() {
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-clear').classList.add('hidden');
+  searchQ = '';
+  renderProducts();
+}
+
+function resetFilter() {
+  clearSearch();
+  document.querySelectorAll('.pharma-cat').forEach(c => c.classList.remove('active'));
+  document.querySelector('.pharma-cat').classList.add('active');
+  currentCat = 'all';
+  renderProducts();
+}
+
+// Cart functions
+function getCart() { return MediZen.storage.get('mz_cart') || []; }
+function saveCart(c) { MediZen.storage.set('mz_cart', c); }
+
+function updateCartBadge() {
+  const cart = getCart();
+  const total = cart.reduce(function(s,i){ return s + i.qty; }, 0);
+  const badge = document.getElementById('cart-badge');
+  const floatCart = document.getElementById('float-cart');
+  const floatBadge = document.getElementById('float-badge');
+  if (total > 0) {
+    badge.textContent = total > 9 ? '9+' : total;
+    badge.classList.remove('hidden');
+    floatBadge.textContent = total + ' item';
+    floatCart.classList.remove('hidden');
+  } else {
+    badge.classList.add('hidden');
+    floatCart.classList.add('hidden');
+  }
+}
+
+function addToCart(id) {
+  const p = PRODUCTS.find(function(x){ return x.id === id; });
+  if (!p) return;
+  var cart = getCart();
+  var existing = cart.find(function(i){ return i.id === id; });
+  if (existing) existing.qty++;
+  else cart.push({ id: id, name: p.name, price: p.price, icon: p.icon, qty: 1 });
+  saveCart(cart);
+  updateCartBadge();
+  MediZen.toast(p.name + ' ditambahkan 🛒', 'success');
+}
+
+function openCart() { renderCart(); document.getElementById('cart-modal').classList.add('active'); }
+function closeCart() { document.getElementById('cart-modal').classList.remove('active'); }
+
+function renderCart() {
+  var cart = getCart();
+  var body = document.getElementById('cart-body');
+  var foot = document.getElementById('cart-foot');
+  if (!cart.length) {
+    body.innerHTML = '<div class="empty-cart"><div class="empty-cart-icon">🛒</div><div>Keranjangmu masih kosong</div><div style="font-size:12px;color:var(--text-muted);margin-top:6px">Yuk belanja dulu!</div></div>';
+    foot.style.display = 'none';
+    return;
+  }
+  body.innerHTML = cart.map(function(item) {
+    return '<div class="cart-item">' +
+      '<div class="cart-item-thumb">' + item.icon + '</div>' +
+      '<div class="cart-item-info">' +
+        '<div class="cart-item-name">' + item.name + '</div>' +
+        '<div class="cart-item-price">Rp ' + (item.price * item.qty).toLocaleString('id-ID') + '</div>' +
+        '<div style="font-size:11px;color:var(--text-muted)">@ Rp ' + item.price.toLocaleString('id-ID') + '</div>' +
+      '</div>' +
+      '<div class="cart-qty-wrap">' +
+        '<button class="qty-btn-sm" onclick="changeQty(\'' + item.id + '\',-1)">−</button>' +
+        '<span class="qty-num">' + item.qty + '</span>' +
+        '<button class="qty-btn-sm" onclick="changeQty(\'' + item.id + '\',1)">+</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  var total = cart.reduce(function(s,i){ return s + i.price * i.qty; }, 0);
+  document.getElementById('cart-total').textContent = 'Rp ' + total.toLocaleString('id-ID');
+
+  var FREE_SHIPPING = 75000;
+  var remaining = Math.max(0, FREE_SHIPPING - total);
+  var shippingEl = document.getElementById('shipping-status');
+  if (remaining <= 0) {
+    shippingEl.innerHTML = '✅ Selamat! Kamu mendapat <strong>gratis ongkir</strong>';
+    shippingEl.style.color = 'var(--accent-green)';
+  } else {
+    shippingEl.innerHTML = '🚚 Tambah <strong>Rp ' + remaining.toLocaleString('id-ID') + '</strong> lagi untuk gratis ongkir';
+    shippingEl.style.color = '';
+  }
+  foot.style.display = 'block';
+}
+
+function changeQty(id, delta) {
+  var cart = getCart();
+  var item = cart.find(function(i){ return i.id === id; });
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) cart = cart.filter(function(i){ return i.id !== id; });
+  saveCart(cart);
+  updateCartBadge();
+  renderCart();
+}
+
+function doCheckout() {
+  var cart = getCart();
+  var total = cart.reduce(function(s,i){ return s + i.price * i.qty; }, 0);
+  var orderNum = '#MZ-' + Math.floor(1000 + Math.random() * 9000);
+  var orders = MediZen.storage.get('mz_orders') || [];
+  orders.unshift({ id: orderNum, items: cart, total: total, date: new Date().toISOString(), status: 'processing' });
+  MediZen.storage.set('mz_orders', orders);
+  saveCart([]);
+  updateCartBadge();
+  closeCart();
+  document.getElementById('order-number').textContent = orderNum;
+  document.getElementById('success-total').textContent = 'Rp ' + total.toLocaleString('id-ID');
+  document.getElementById('success-overlay').classList.remove('hidden');
+}
+
+function closeSuccess() {
+  document.getElementById('success-overlay').classList.add('hidden');
+}
+
+document.getElementById('cart-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeCart();
+});
+
+renderProducts();
+updateCartBadge();
+</script>
+</body>
+</html>

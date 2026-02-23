@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MediZen AI — Asisten Kesehatan</title>
+<link rel="stylesheet" href="chatbot.css">
+</head>
+<body>
+<div class="app-shell">
+<div class="chatbot-page">
+
+  <!-- Header -->
+  <div class="chat-header">
+    <a href="../home/index.html" class="icon-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </a>
+    <div class="chat-header-avatar">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 8V4H8"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M18 12h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h2"/><path d="M18 12V6a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v6"/><circle cx="12" cy="16" r="2"/></svg>
+      <div class="pulse-dot" style="position:absolute;bottom:-2px;right:-2px;width:8px;height:8px;"></div>
+    </div>
+    <div class="chat-header-info">
+      <div class="chat-header-name">MediZen AI</div>
+      <div class="chat-header-status">
+        <div class="pulse-dot" style="width:6px;height:6px;animation:pulseAnim 2s infinite;"></div>
+        Asisten aktif
+      </div>
+    </div>
+    <button class="icon-btn" onclick="clearChat()" title="Reset percakapan">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.59"/></svg>
+    </button>
+  </div>
+
+  <!-- Context bar -->
+  <div class="chat-context-bar" id="context-bar" style="display:none;">
+    <span class="chat-context-label">Topik:</span>
+    <span class="chat-context-topic" id="context-topic">-</span>
+    <button class="chat-reset-btn" onclick="resetTopic()">Ganti topik</button>
+  </div>
+
+  <!-- Messages -->
+  <div class="chat-messages" id="chat-messages"></div>
+
+  <!-- Suggestions -->
+  <div class="suggestions-scroll" id="suggestions-scroll">
+    <div class="suggestion-chip" onclick="sendSuggestion(this.textContent)">Gejala demam</div>
+    <div class="suggestion-chip" onclick="sendSuggestion(this.textContent)">Tips tidur nyenyak</div>
+    <div class="suggestion-chip" onclick="sendSuggestion(this.textContent)">Olahraga yang cocok</div>
+    <div class="suggestion-chip" onclick="sendSuggestion(this.textContent)">Pola makan sehat</div>
+    <div class="suggestion-chip" onclick="sendSuggestion(this.textContent)">Cara mengurangi stres</div>
+    <div class="suggestion-chip" onclick="sendSuggestion(this.textContent)">Cek dokter apa?</div>
+  </div>
+
+  <!-- Input -->
+  <div class="chat-input-bar">
+    <div class="chat-input-wrap">
+      <textarea id="chat-input" placeholder="Tanya apa saja tentang kesehatan..." rows="1"></textarea>
+    </div>
+    <button class="chat-send-btn" id="send-btn" onclick="sendMessage()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+
+</div>
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script>
+if (!MediZen.auth.isLoggedIn()) window.location.href = '../auth/login.html';
+
+const user = MediZen.auth.getUser();
+const userName = (user && user.name) ? user.name.split(' ')[0] : 'kamu';
+
+// ─── Knowledge base responses ───────────────────────────────────────────────
+const KB = {
+  greet: {
+    patterns: ['halo','hai','hi','hello','selamat','pagi','siang','sore','malam','hei'],
+    responses: [
+      `Halo ${userName}! Apa kabar? Aku MediZen AI, asisten kesehatanmu. Mau tanya soal apa hari ini?`,
+      `Hai ${userName}! Senang bisa bantu kamu. Ada keluhan atau pertanyaan kesehatan yang ingin dibahas?`
+    ],
+    quickReplies: ['Aku pusing nih', 'Mau tanya soal diet', 'Butuh rekomendasi dokter']
+  },
+  demam: {
+    patterns: ['demam','panas','suhu','fever','37','38','39','40'],
+    responses: null,
+    custom: () => buildDemamResponse()
+  },
+  sakit_kepala: {
+    patterns: ['pusing','kepala','migrain','headache','kepala sakit','sakit kepala'],
+    responses: null,
+    custom: () => buildSakitKepalaResponse()
+  },
+  tidur: {
+    patterns: ['tidur','insomnia','susah tidur','tidak bisa tidur','kurang tidur','begadang'],
+    responses: null,
+    custom: () => buildTidurResponse()
+  },
+  makan: {
+    patterns: ['makan','diet','gizi','nutrisi','kalori','karbohidrat','protein','vitamin','makanan sehat','pola makan'],
+    responses: null,
+    custom: () => buildMakanResponse()
+  },
+  olahraga: {
+    patterns: ['olahraga','gym','lari','jogging','workout','latihan','gerak','aktivitas fisik'],
+    responses: null,
+    custom: () => buildOlahragaResponse()
+  },
+  stres: {
+    patterns: ['stres','stress','cemas','anxiety','khawatir','gelisah','mental','depresi','sedih','burnout'],
+    responses: null,
+    custom: () => buildStresResponse()
+  },
+  dokter: {
+    patterns: ['dokter','spesialis','konsultasi','periksa','rs','rumah sakit','klinik','cari dokter'],
+    responses: null,
+    custom: () => buildDokterResponse()
+  },
+  covid: {
+    patterns: ['covid','corona','batuk','pilek','flu','sesak','sesak napas','nafas','tenggorokan'],
+    responses: null,
+    custom: () => buildCovidResponse()
+  },
+  obat: {
+    patterns: ['obat','paracetamol','antibiotik','ibuprofen','vitamin','suplemen','minum obat'],
+    responses: [
+      'Untuk informasi obat yang akurat, selalu konsultasikan dengan dokter atau apoteker ya. Aku bisa bantu kasih gambaran umum, tapi jangan jadikan ini pengganti saran medis profesional.',
+      'Penggunaan obat harus sesuai petunjuk dokter atau apoteker. Jangan sembarangan minum antibiotik tanpa resep dokter ya!'
+    ],
+    quickReplies: ['Cari dokter sekarang', 'Tanya gejala dulu']
+  },
+  thanks: {
+    patterns: ['terima kasih','makasih','thanks','thank you','thx','tq'],
+    responses: [
+      `Sama-sama ${userName}! Senang bisa bantu. Kalau ada pertanyaan lain, aku siap ya!`,
+      `Dengan senang hati! Ingat, untuk kondisi serius selalu konsultasi ke dokter ya. Jaga kesehatan!`
+    ],
+    quickReplies: ['Tanya yang lain', 'Cari dokter']
+  },
+  byebye: {
+    patterns: ['bye','dadah','sampai jumpa','ok deh','oke','cukup','sudah'],
+    responses: [
+      `Sampai jumpa ${userName}! Jaga kesehatan dan jangan lupa minum air yang cukup ya!`,
+      `Oke! Semoga harimu menyenangkan. Kalau butuh info kesehatan lagi, aku di sini!`
+    ]
+  }
+};
+
+function buildDemamResponse() {
+  return {
+    text: 'Demam bisa jadi tanda tubuh sedang melawan infeksi. Berikut yang perlu diperhatikan:',
+    card: {
+      title: 'Panduan Pertolongan Pertama Demam',
+      items: [
+        'Suhu 37.5–38°C: Istirahat, kompres hangat, perbanyak cairan',
+        'Suhu 38–39°C: Boleh minum paracetamol sesuai dosis, pantau terus',
+        'Suhu di atas 39°C atau berlangsung lebih dari 3 hari: Segera ke dokter',
+        'Demam disertai kejang, ruam, atau sesak napas: Pergi ke IGD segera'
+      ]
+    },
+    quickReplies: ['Cara kompres yang benar', 'Cari dokter umum', 'Gejala lain yang harus diwaspadai']
+  };
+}
+
+function buildSakitKepalaResponse() {
+  return {
+    text: 'Sakit kepala punya banyak penyebab. Yuk kenali dulu jenisnya:',
+    card: {
+      title: 'Jenis Sakit Kepala Umum',
+      items: [
+        'Tension headache: Rasa tertekan di kepala, biasanya karena stres atau kelelahan',
+        'Migrain: Nyeri berdenyut satu sisi, bisa disertai mual dan sensitif cahaya',
+        'Sakit kepala cluster: Nyeri tajam di sekitar mata, lebih jarang terjadi',
+        'Red flag: Sakit kepala mendadak sangat parah, disertai demam/kaku leher — segera ke dokter'
+      ]
+    },
+    quickReplies: ['Cara mengatasi migrain', 'Kapan harus ke dokter?', 'Hubungan stres dan sakit kepala']
+  };
+}
+
+function buildTidurResponse() {
+  return {
+    text: 'Kurang tidur berdampak besar pada kesehatan fisik dan mental. Ini tips yang bisa membantu:',
+    card: {
+      title: 'Tips Tidur Berkualitas',
+      items: [
+        'Tidur dan bangun di jam yang sama setiap hari, termasuk akhir pekan',
+        'Matikan layar (HP, laptop) minimal 30 menit sebelum tidur',
+        'Buat kamar sejuk, gelap, dan tenang — suhu ideal 18–22 derajat Celsius',
+        'Hindari kafein setelah jam 3 sore',
+        'Coba teknik 4-7-8: tarik napas 4 detik, tahan 7 detik, buang 8 detik'
+      ]
+    },
+    tip: 'Orang dewasa butuh 7–9 jam tidur per malam. Kalau insomnia berlangsung lebih dari 3 minggu, pertimbangkan konsultasi ke dokter atau psikolog.',
+    quickReplies: ['Kenapa sering terbangun?', 'Makanan yang bantu tidur', 'Cari psikolog']
+  };
+}
+
+function buildMakanResponse() {
+  return {
+    text: 'Pola makan sehat tidak harus rumit. Ini panduan sederhananya:',
+    card: {
+      title: 'Prinsip Makan Sehat Gen Z',
+      items: [
+        'Isi setengah piring dengan sayur dan buah berwarna beragam',
+        'Seperempat piring protein: telur, ayam, ikan, tahu, tempe',
+        'Seperempat piring karbohidrat kompleks: nasi merah, oat, ubi',
+        'Batasi gula tambahan maksimal 50g per hari (sekitar 4 sendok makan)',
+        'Minum air putih 8 gelas per hari, kurangi minuman manis kemasan'
+      ]
+    },
+    tip: 'Tidak ada yang sempurna soal makan. Yang penting konsisten dan sustainable, bukan diet ekstrem!',
+    quickReplies: ['Cara hitung kalori', 'Makanan untuk jerawat', 'Konsultasi ke dokter gizi']
+  };
+}
+
+function buildOlahragaResponse() {
+  return {
+    text: 'Olahraga rutin adalah investasi kesehatan terbaik. Ini rekomendasinya:',
+    card: {
+      title: 'Panduan Olahraga Mingguan',
+      items: [
+        'Target WHO: minimal 150 menit aktivitas sedang per minggu',
+        'Pemula: mulai dengan jalan cepat 30 menit, 5x seminggu',
+        'Tambahkan latihan kekuatan 2x seminggu untuk metabolisme',
+        'Pilih aktivitas yang kamu suka agar lebih konsisten',
+        'Pemanasan 5 menit dan pendinginan 5 menit wajib dilakukan'
+      ]
+    },
+    tip: 'Aktivitas ringan tapi rutin jauh lebih baik daripada olahraga intens tapi jarang. Mulai dari yang kecil!',
+    quickReplies: ['Olahraga untuk pemula', 'Nyeri otot setelah gym', 'Olahraga dengan kondisi tertentu']
+  };
+}
+
+function buildStresResponse() {
+  return {
+    text: 'Stres dan kecemasan adalah hal yang wajar, tapi perlu dikelola dengan baik:',
+    card: {
+      title: 'Cara Mengelola Stres',
+      items: [
+        'Teknik grounding 5-4-3-2-1: identifikasi 5 hal yang dilihat, 4 disentuh, 3 didengar, 2 dicium, 1 dirasakan',
+        'Napas perut dalam 5 menit bisa menurunkan kortisol secara signifikan',
+        'Olahraga ringan melepaskan endorfin alami pereda stres',
+        'Journaling: tulis kekhawatiranmu untuk membantu memprosesnya',
+        'Batasi scrolling media sosial, terutama sebelum tidur'
+      ]
+    },
+    tip: 'Kalau stres atau kecemasan terasa berlebihan dan mengganggu aktivitas sehari-hari, pertimbangkan untuk bicara dengan psikolog. Tidak ada yang perlu ditanggung sendirian.',
+    quickReplies: ['Cari psikolog', 'Teknik napas lebih lengkap', 'Tanda butuh bantuan profesional']
+  };
+}
+
+function buildDokterResponse() {
+  const specs = [
+    { name: 'Dokter Umum', for: 'Gejala umum, demam, batuk, pilek, check-up rutin' },
+    { name: 'Internist (Sp.PD)', for: 'Diabetes, hipertensi, penyakit dalam' },
+    { name: 'Psikolog/Psikiater', for: 'Stres, kecemasan, depresi, masalah mental' },
+    { name: 'Sp. Gizi', for: 'Program diet, gangguan makan, nutrisi khusus' },
+    { name: 'Sp. Kulit (Sp.KK)', for: 'Jerawat, eksim, alergi kulit, estetika' },
+  ];
+  return {
+    text: 'Bingung mau ke dokter apa? Ini panduan singkatnya:',
+    card: {
+      title: 'Pilih Spesialisasi yang Tepat',
+      items: specs.map(s => `${s.name}: ${s.for}`)
+    },
+    cta: { label: 'Cari & Booking Dokter Sekarang', link: '../doctors/index.html' },
+    quickReplies: ['Dokter untuk jerawat', 'Dokter untuk mental health', 'Dokter untuk diet']
+  };
+}
+
+function buildCovidResponse() {
+  return {
+    text: 'Gejala saluran pernapasan perlu dipantau dengan seksama:',
+    card: {
+      title: 'Panduan Gejala Pernapasan',
+      items: [
+        'Batuk ringan tanpa sesak: istirahat, banyak minum air hangat, madu + jahe',
+        'Demam + batuk + pilek: isolasi mandiri, pantau suhu setiap 8 jam',
+        'Sesak napas atau saturasi oksigen di bawah 95%: segera ke IGD',
+        'Nyeri dada mendadak: gawat darurat, hubungi 119'
+      ]
+    },
+    tip: 'Kalau kamu tidak yakin dengan kondisimu, lebih baik konsultasikan ke dokter secara online dulu dari MediZen.',
+    quickReplies: ['Konsultasi dokter online', 'Cara cek saturasi oksigen', 'Kapan harus ke IGD?']
+  };
+}
+
+// ─── State ───────────────────────────────────────────────────────────────────
+let messages = [];
+let currentTopic = null;
+let isTyping = false;
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function getTime() {
+  return new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+}
+
+function matchKB(text) {
+  const lower = text.toLowerCase();
+  for (const [key, entry] of Object.entries(KB)) {
+    if (entry.patterns && entry.patterns.some(p => lower.includes(p))) {
+      return { key, entry };
+    }
+  }
+  return null;
+}
+
+function buildBotContent(data) {
+  let html = '';
+  if (data.text) {
+    html += `<div class="msg-bubble bot">${data.text}`;
+    if (data.card) {
+      html += `<div class="bot-card">
+        <div class="bot-card-title">${data.card.title}</div>
+        ${data.card.items.map(item => `<div class="bot-card-item"><div class="bot-card-dot"></div><div>${item}</div></div>`).join('')}
+      </div>`;
+    }
+    if (data.tip) {
+      html += `<div class="health-tip-card" style="margin-top:8px;">
+        <div class="health-tip-label">Tips Dokter</div>
+        <div class="health-tip-text">${data.tip}</div>
+      </div>`;
+    }
+    if (data.cta) {
+      html += `<a href="${data.cta.link}" class="btn btn-primary btn-sm" style="margin-top:10px;width:100%;">${data.cta.label}</a>`;
+    }
+    html += `</div>`;
+  }
+  if (data.quickReplies && data.quickReplies.length) {
+    html += `<div class="quick-replies">
+      ${data.quickReplies.map(r => `<button class="quick-reply-btn" onclick="sendSuggestion('${r}')">${r}</button>`).join('')}
+    </div>`;
+  }
+  return html;
+}
+
+function renderBotAvatar() {
+  return `<div class="msg-avatar">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 8V4H8"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M18 12h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h2"/><path d="M18 12V6a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v6"/><circle cx="12" cy="16" r="2"/></svg>
+  </div>`;
+}
+
+function addMessage(role, content, time) {
+  const wrap = document.getElementById('chat-messages');
+  const row = document.createElement('div');
+  row.className = 'msg-row ' + role;
+
+  if (role === 'bot') {
+    row.innerHTML = renderBotAvatar() + `<div class="msg-content">${content}<div class="msg-time">${time}</div></div>`;
+  } else {
+    row.innerHTML = `<div class="msg-content"><div class="msg-bubble user">${content}</div><div class="msg-time">${time}</div></div>`;
+  }
+
+  wrap.appendChild(row);
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+function showTyping() {
+  const wrap = document.getElementById('chat-messages');
+  const row = document.createElement('div');
+  row.className = 'msg-row bot';
+  row.id = 'typing-indicator';
+  row.innerHTML = renderBotAvatar() + `<div class="msg-content"><div class="msg-bubble bot"><div class="typing-bubble"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div></div>`;
+  wrap.appendChild(row);
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+function removeTyping() {
+  const el = document.getElementById('typing-indicator');
+  if (el) el.remove();
+}
+
+function processMessage(text) {
+  const t = getTime();
+  const match = matchKB(text);
+
+  if (!match) {
+    // Fallback with generic helpful response
+    const fallbacks = [
+      {
+        text: `Hmm, aku belum punya info spesifik soal itu. Untuk pertanyaan medis yang lebih spesifik, sebaiknya konsultasikan langsung ke dokter ya ${userName}.`,
+        quickReplies: ['Cari dokter sekarang', 'Tanya hal lain', 'Gejala umum']
+      },
+      {
+        text: 'Pertanyaan yang menarik! Untuk jawaban yang akurat dan personal, dokter adalah sumber terbaik. Mau aku bantu cari dokter yang sesuai?',
+        quickReplies: ['Cari dokter', 'Tanya soal gejala', 'Tips kesehatan umum']
+      }
+    ];
+    const fallback = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    addMessage('bot', buildBotContent(fallback), t);
+    return;
+  }
+
+  const { key, entry } = match;
+  currentTopic = key;
+
+  // Update context bar
+  const topicLabels = {
+    demam: 'Demam & Suhu', sakit_kepala: 'Sakit Kepala', tidur: 'Kualitas Tidur',
+    makan: 'Pola Makan', olahraga: 'Olahraga', stres: 'Stres & Mental',
+    dokter: 'Cari Dokter', covid: 'Saluran Pernapasan', obat: 'Informasi Obat',
+    greet: '', thanks: '', byebye: ''
+  };
+  if (topicLabels[key]) {
+    document.getElementById('context-bar').style.display = 'flex';
+    document.getElementById('context-topic').textContent = topicLabels[key];
+  }
+
+  if (entry.custom) {
+    const data = entry.custom();
+    addMessage('bot', buildBotContent(data), t);
+  } else if (entry.responses) {
+    const resp = entry.responses[Math.floor(Math.random() * entry.responses.length)];
+    const data = { text: resp, quickReplies: entry.quickReplies };
+    addMessage('bot', buildBotContent(data), t);
+  }
+}
+
+function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text || isTyping) return;
+
+  addMessage('user', text, getTime());
+  input.value = '';
+  input.style.height = 'auto';
+
+  isTyping = true;
+  document.getElementById('send-btn').disabled = true;
+  showTyping();
+
+  const delay = 800 + Math.random() * 800;
+  setTimeout(() => {
+    removeTyping();
+    processMessage(text);
+    isTyping = false;
+    document.getElementById('send-btn').disabled = false;
+  }, delay);
+
+  // Save to storage
+  const history = MediZen.storage.get('chat_history') || [];
+  history.push({ role: 'user', text, time: new Date().toISOString() });
+  if (history.length > 50) history.shift();
+  MediZen.storage.set('chat_history', history);
+}
+
+window.sendSuggestion = function(text) {
+  document.getElementById('chat-input').value = text;
+  sendMessage();
+};
+
+window.clearChat = function() {
+  if (!confirm('Reset percakapan? Riwayat chat akan dihapus.')) return;
+  document.getElementById('chat-messages').innerHTML = '';
+  document.getElementById('context-bar').style.display = 'none';
+  currentTopic = null;
+  MediZen.storage.remove('chat_history');
+  initGreeting();
+  MediZen.toast('Percakapan direset', 'info');
+};
+
+window.resetTopic = function() {
+  currentTopic = null;
+  document.getElementById('context-bar').style.display = 'none';
+};
+
+// Enter to send, shift+enter for newline
+document.getElementById('chat-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+// Auto resize textarea
+document.getElementById('chat-input').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+});
+
+function initGreeting() {
+  const t = getTime();
+  const hour = new Date().getHours();
+  let greeting = 'Selamat datang';
+  if (hour < 12) greeting = 'Selamat pagi';
+  else if (hour < 15) greeting = 'Selamat siang';
+  else if (hour < 18) greeting = 'Selamat sore';
+  else greeting = 'Selamat malam';
+
+  const welcomeData = {
+    text: `${greeting}, ${userName}! Aku MediZen AI, asisten kesehatanmu. Aku bisa bantu jawab pertanyaan seputar kesehatan, gejala umum, tips hidup sehat, dan rekomendasi dokter.\n\nPerlu diingat: aku bukan pengganti dokter. Untuk kondisi serius, selalu konsultasi ke profesional medis ya.`,
+    quickReplies: ['Ada gejala nih', 'Tips kesehatan', 'Cari dokter yang cocok']
+  };
+
+  // Add date separator
+  const wrap = document.getElementById('chat-messages');
+  const sep = document.createElement('div');
+  sep.className = 'chat-date-sep';
+  sep.textContent = 'Hari ini';
+  wrap.appendChild(sep);
+
+  addMessage('bot', buildBotContent(welcomeData), t);
+}
+
+initGreeting();
+</script>
+
+  <nav class="bottom-nav">
+    <a href="../home/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="nav-label">Beranda</span>
+    </a>
+    <a href="../search/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="nav-label">Search</span>
+    </a>
+    <a href="../doctors/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Dokter</span>
+    </a>
+    <a href="../chatbot/index.html" class="nav-item active">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="nav-label">AI Chat</span>
+    </a>
+    <a href="../profile/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Profil</span>
+    </a>
+  </nav>
+</body>
+</html>

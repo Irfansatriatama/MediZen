@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Detail Artikel — MediZen</title>
+<link rel="stylesheet" href="health-info.css">
+</head>
+<body>
+<div class="app-shell">
+  <div style="padding-bottom:calc(var(--nav-h) + 16px); animation: fadeIn 0.4s ease;">
+
+    <!-- Header -->
+    <div class="detail-header">
+      <a href="index.html" class="back-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Kembali
+      </a>
+      <div class="detail-actions">
+        <button class="icon-btn" id="bookmark-btn" onclick="toggleBookmark()" title="Simpan artikel">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" id="bookmark-icon"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button class="icon-btn" onclick="shareArticle()" title="Bagikan">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Article content -->
+    <div id="article-container">
+      <!-- Populated by JS -->
+    </div>
+
+    <!-- Related -->
+    <div class="related-section">
+      <div class="related-title">Artikel Terkait</div>
+      <div id="related-grid" class="article-grid"></div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+    <a href="../home/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="nav-label">Beranda</span>
+    </a>
+    <a href="../search/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="nav-label">Search</span>
+    </a>
+    <a href="../doctors/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Dokter</span>
+    </a>
+    <a href="../chatbot/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="nav-label">AI Chat</span>
+    </a>
+    <a href="../profile/index.html" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span class="nav-label">Profil</span>
+    </a>
+  </nav>
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script>
+if (!MediZen.auth.isLoggedIn()) window.location.href = '../auth/login.html';
+
+const ARTICLES_DATA = {
+  1: {
+    cat: 'Mental Health', catColor: 'var(--accent-purple)', emoji: '🧠',
+    title: '5 Cara Menjaga Kesehatan Mental di Tengah Kesibukan Kerja',
+    author: 'dr. Sari Dewi', role: 'Psikiater RS Cipto', authorEmoji: '👩‍⚕️',
+    time: '2 jam lalu', read: '5 min',
+    content: `
+      <p>Di era serba cepat ini, kesehatan mental sering kali terlupakan di tengah tuntutan pekerjaan yang tiada henti. Burnout, kecemasan, dan stres kronis kini menjadi masalah nyata yang dihadapi jutaan pekerja muda.</p>
+      <h2>Mengapa Kesehatan Mental Penting?</h2>
+      <p>Kesehatan mental bukan sekadar "tidak gila" — ini tentang kemampuanmu mengelola emosi, beradaptasi dengan tekanan, dan membangun hubungan yang sehat. Ketika mental sehat, produktivitasmu meningkat, kreativitas meluap, dan kamu bisa menikmati hidup lebih penuh.</p>
+      <div class="highlight-box"><p>Menurut WHO, 1 dari 4 orang di dunia akan mengalami gangguan mental di suatu titik dalam hidupnya. Ini bukan kelemahan — ini adalah kondisi medis yang bisa ditangani.</p></div>
+      <h2>5 Cara Efektif Menjaga Kesehatan Mental</h2>
+      <h3>1. Tetapkan Batasan yang Jelas</h3>
+      <p>Belajar bilang "tidak" adalah keterampilan yang perlu dilatih. Batasi jam kerja, matikan notifikasi setelah jam kerja berakhir, dan pisahkan waktu kerja dari waktu istirahat.</p>
+      <h3>2. Praktikkan Mindfulness 5 Menit Sehari</h3>
+      <p>Tidak perlu meditasi panjang. Cukup 5 menit duduk diam, fokus pada napas, dan biarkan pikiran berlalu tanpa kamu ikuti. Lakukan di pagi hari sebelum membuka ponsel.</p>
+      <h3>3. Jaga Koneksi Sosial</h3>
+      <p>Hubungan yang bermakna adalah penyangga terkuat kesehatan mental. Luangkan waktu untuk bertemu teman atau keluarga, bahkan sekadar telepon singkat sudah membantu.</p>
+      <h3>4. Gerakkan Tubuhmu</h3>
+      <p>Olahraga melepaskan endorfin yang meningkatkan suasana hati secara alami. Tidak perlu gym — jalan kaki 20 menit atau senam ringan di kamar sudah sangat bermanfaat.</p>
+      <h3>5. Cari Bantuan Profesional</h3>
+      <p>Berbicara dengan psikolog atau konselor bukan tanda kelemahan. Ini adalah tindakan berani yang menunjukkan kamu peduli dengan dirimu sendiri.</p>
+      <div class="warning-box"><p>Jika kamu mengalami gejala seperti tidak bisa tidur lebih dari 2 minggu, kehilangan minat pada hal yang disukai, atau pikiran menyakiti diri sendiri — segera cari bantuan profesional.</p></div>
+      <h2>Kapan Harus Berkonsultasi dengan Dokter?</h2>
+      <p>Konsultasikan kondisimu jika gejala berlangsung lebih dari 2 minggu, mengganggu aktivitas sehari-hari, atau membuatmu merasa putus asa. Ingat, minta bantuan adalah keberanian, bukan kelemahan.</p>
+    `
+  },
+  2: {
+    cat: 'Nutrisi', catColor: 'var(--primary)', emoji: '🥗',
+    title: 'Panduan Makan Sehat untuk Gen Z yang Sibuk dan On Budget',
+    author: 'Mira Andriani, AMG', role: 'Ahli Gizi Klinik', authorEmoji: '👩',
+    time: '5 jam lalu', read: '3 min',
+    content: `
+      <p>Makan sehat tidak harus mahal atau ribet. Dengan sedikit perencanaan, kamu bisa menjaga asupan nutrisi optimal meski jadwal padat dan kantong pas-pasan.</p>
+      <h2>Prinsip Dasar Makan Sehat</h2>
+      <p>Piring sehatmu idealnya terdiri dari: setengah piring sayur dan buah, seperempat karbohidrat kompleks (nasi merah, gandum, kentang), dan seperempat protein (ayam, ikan, tahu, tempe).</p>
+      <div class="highlight-box"><p>Isi Piringku versi Kemenkes RI: 50% buah dan sayur, 25% karbohidrat, 25% protein. Sederhana dan mudah diingat!</p></div>
+      <h2>Tips Hemat namun Bergizi</h2>
+      <h3>Meal Prep di Hari Minggu</h3>
+      <p>Sisihkan 1-2 jam di akhir pekan untuk memasak bahan makanan dalam jumlah besar. Simpan dalam wadah terpisah untuk 3-4 hari ke depan. Ini menghemat waktu dan uang sekaligus.</p>
+      <h3>Pilih Protein Lokal</h3>
+      <p>Tahu, tempe, telur, dan ikan lokal adalah sumber protein berkualitas tinggi dengan harga terjangkau. Ganti protein hewani mahal dengan kombinasi ini minimal 3 kali seminggu.</p>
+      <h3>Kurangi Makanan Ultra-Proses</h3>
+      <p>Mie instan, keripik, minuman manis — boleh sesekali tapi jangan jadi makanan utama. Ganti dengan makanan asli yang jauh lebih bergizi dengan harga serupa.</p>
+    `
+  },
+  3: {
+    cat: 'Olahraga', catColor: 'var(--accent-green)', emoji: '🏃',
+    title: 'Olahraga 15 Menit Sehari yang Efektif Tanpa Perlu Gym',
+    author: 'Reza Pratama, S.Kes', role: 'Personal Trainer', authorEmoji: '🧑',
+    time: 'Kemarin', read: '4 min',
+    content: `
+      <p>Tidak punya waktu atau uang untuk gym? Bukan masalah. Penelitian menunjukkan bahwa olahraga intensitas sedang-tinggi selama 15 menit sudah memberikan manfaat kardiovaskular yang signifikan.</p>
+      <h2>Latihan HIIT 15 Menit</h2>
+      <p>High-Intensity Interval Training (HIIT) adalah metode olahraga yang terbukti efektif membakar kalori, meningkatkan daya tahan, dan memperkuat otot dalam waktu singkat.</p>
+      <h3>Warm-up (3 menit)</h3>
+      <ul>
+        <li>Jogging di tempat: 60 detik</li>
+        <li>Arm circles: 30 detik tiap arah</li>
+        <li>Leg swings: 30 detik tiap kaki</li>
+      </ul>
+      <h3>Sirkuit Utama (10 menit — 4 putaran)</h3>
+      <ul>
+        <li>Jumping jacks: 30 detik</li>
+        <li>Push-up: 30 detik</li>
+        <li>Squat: 30 detik</li>
+        <li>Mountain climber: 30 detik</li>
+        <li>Istirahat: 30 detik</li>
+      </ul>
+      <h3>Cool-down (2 menit)</h3>
+      <p>Regangkan semua otot besar: paha depan, paha belakang, betis, bahu, dan punggung. Jangan lewati bagian ini karena membantu pemulihan otot.</p>
+      <div class="highlight-box"><p>Lakukan minimal 3-4 kali seminggu untuk hasil optimal. Konsistensi lebih penting daripada intensitas!</p></div>
+    `
+  }
+};
+
+const RELATED = [
+  { id: 2, cat: 'Nutrisi', catColor: 'var(--primary)', emoji: '🥗', title: 'Panduan Makan Sehat untuk Gen Z yang Sibuk', time: '5 jam lalu', read: '3 min' },
+  { id: 3, cat: 'Olahraga', catColor: 'var(--accent-green)', emoji: '🏃', title: 'Olahraga 15 Menit Sehari yang Efektif', time: 'Kemarin', read: '4 min' },
+  { id: 4, cat: 'Tidur', catColor: 'var(--accent-blue)', emoji: '😴', title: 'Cara Mengatasi Insomnia dengan 4-7-8 Breathing', time: 'Kemarin', read: '4 min' },
+];
+
+let bookmarked = false;
+let currentId = 1;
+
+function toggleBookmark() {
+  bookmarked = !bookmarked;
+  const icon = document.getElementById('bookmark-icon');
+  icon.setAttribute('fill', bookmarked ? 'var(--primary)' : 'none');
+  icon.setAttribute('stroke', bookmarked ? 'var(--primary)' : 'currentColor');
+  MediZen.toast(bookmarked ? 'Artikel disimpan!' : 'Artikel dihapus dari simpanan', bookmarked ? 'success' : 'info');
+}
+
+function shareArticle() {
+  MediZen.toast('Link artikel disalin ke clipboard!', 'success');
+}
+
+function renderArticle(id) {
+  const data = ARTICLES_DATA[id] || ARTICLES_DATA[1];
+  currentId = id;
+  document.title = data.title + ' — MediZen';
+
+  document.getElementById('article-container').innerHTML = `
+    <div class="detail-hero">
+      <div class="detail-cover">${data.emoji}</div>
+      <div class="detail-cat" style="color:${data.catColor}">${data.cat}</div>
+      <div class="detail-title">${data.title}</div>
+      <div class="detail-byline">
+        <div class="author-info">
+          <div class="author-ava">${data.authorEmoji}</div>
+          <div>
+            <div class="author-nm">${data.author}</div>
+            <div class="author-role">${data.role}</div>
+          </div>
+        </div>
+        <div class="detail-stats">
+          <div class="detail-stat">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            ${data.read}
+          </div>
+          <div class="detail-stat">${data.time}</div>
+        </div>
+      </div>
+    </div>
+    <div class="detail-content">${data.content}</div>
+  `;
+
+  // Render related
+  const relatedGrid = document.getElementById('related-grid');
+  const others = RELATED.filter(r => r.id !== id).slice(0, 2);
+  relatedGrid.innerHTML = others.map(a => `
+    <a href="detail.html?id=${a.id}" class="article-row" onclick="renderArticle(${a.id});window.scrollTo(0,0);">
+      <div class="article-thumb" style="background:${a.catColor}18;">${a.emoji}</div>
+      <div class="article-body">
+        <div class="article-cat" style="color:${a.catColor}">${a.cat}</div>
+        <div class="article-ttl">${a.title}</div>
+        <div class="article-info"><span>${a.read}</span><span>·</span><span>${a.time}</span></div>
+      </div>
+    </a>
+  `).join('');
+}
+
+// Get ID from URL params or localStorage
+const urlParams = new URLSearchParams(window.location.search);
+const articleId = parseInt(urlParams.get('id')) || parseInt(localStorage.getItem('mz_detail_article')) || 1;
+renderArticle(articleId);
+</script>
+</body>
+</html>
